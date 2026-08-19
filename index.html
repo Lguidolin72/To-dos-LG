@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>To-Do LG</title>
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA1ElEQVR4nO1Xyw2DMAxN3E6BxI2FmIdz5+lC3JDYIoKTJSukrT/BKRLvFCEn7/nZMRADQdcPW3DAuswR1+BNnnOBN3kuIrYgp4DfIX8u4P16tBVghUkAZm9x4boOWGtvFlALKgGl7LWOFAdRLXtzjFM6PCs6UAo8g/yjgNoivp3FehdoS8JJgtWEGje4e9i3QCJCEnudOSDpA0lscweels201tqbonJgnNKh0bRzQzwHOEQYX20O4GHcLCVu3F/FtwCgP4reWJc5Ai5akIdASuApgnLtt0dSAa8eY6UAAAAASUVORK5CYII=" />
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAFRklEQVR4nO3dTVLbQBCG4bGTU1DFjgtxHtY5Ty7EjipuQZFFaqhByLLmv+fr9zmAkTSv2w1JyCVM9PD49Dnz66OP97fXy6yvPfQLE7BPIwPv/oWIGKnecXd7cULGkV5hN39RQkaO1mE3ezFCRo1WYV9bvAgxo1arhqreFYSMHmqmdfGEJmb0UtNWUdDEjN5KG8sOmpgxSklrWUETM0bLbe500MSMWXLaOxU0MWO2sw3eDZqYYcWZFg+DJmZYc6/JJn9SCFhxM2imM6w6anM3aGKGdbcaZeWAlB9BM52xir1WmdCQ8i1opjNWs22WCQ0pX0EznbGqtF0mNKQQNKRcQ2DdwPpiw0zoQf7++TX7ElwgaEgh6AHidGZK93dlf4aKh8enTyZ0Z0zlsQh6MALvi6AhhaA7ujWNmdL9EDSkEHQnTOE5CHoSgu+DoCGFoDtg+s5D0BMRfnsEDSkE3RhTdy6Cnow3QFsE3RBxzkfQBvBGaIegIYWgG2HK2kDQRvCGaIOgGyBGOwgaUgjaECZ9PYKuRIS2ELQxvEHqEHQF4rOHoCGFoA1i8pcj6EJEZxNBQwpBG8UnQBmCLkBsdhE0pBB0ppHTmU+CfAQNKQRtHFM6D0FnIC77CBpSCPqkmdOZT4bzCBpSLor/rRsT7Zznl4/Zl9Dc1KAJT9PMN8rUlUNxQng3+0zNrBxM67XNDjky802hlQeCfJbOzkzQIdh6MDjH2pmZWTm2WEFssxZyZGpCp6w+MNg+G7NBh2D7wXll/UxMBx2C/QfoyQpnYXaH3sNePccKIUfmJ3RqpQerYrVnvlTQIaz3gFe24rNeauXYYgXpY8WQo+UmdGrlB2/V6s906aBDWP8ALFF4lkuvHFusIGUUQo6Wn9AppYMZRe2ZSQUdgt4B9aT4rKRWji1WkH2KIUdyEzqlfHCl1J+JdNAh6B9gDg/PQj7oEHwc5D1enoH0Dr3H217tJeTIxYROeTpgT/cauQs6BB8H7eEe97hbObbUVhCvIUcuJ3RKKQCleynlPmhocR+00sqhdC+l3AcNLQQNKQQNKa6DVtw5Fe8ph+ugoYegIYWgIcVt0Mq7pvK93eM2aGgiaEghaEhxGbSHHdPDPe5xGTR0ETSkEDSkuAva027p6V4jd0HP8PzywT+PGoSgO0tDJuz+CLqTo3iJuh9Xv8Zg1E6ZE+yIa/L0BmJCN1SyUniKbQSCbqQmTHbrdtysHL0+2luHuMp1WsWErtAjEqZ1HYIuMCI6oi5D0JlGhsa0zudih26xl84OS+EeRmBCn2AhBKb1OQR9wGJE1q7HGoK+wXI4lq9tNvkdOnf3XC0W9fvLxYROrHjYK15zT79nX4AFq0cRr9/jX+jfcj+hV485pXQvpaR36KOJpX74Xu/d5YRWPtDIwz3ucbVDeztkj7u1mwntLeaUp3uX3aHjVPJ0mGeoPxfpCa16aDXUn4nshIZP0hMa/hA0pBA0pBA0pBA0pBA0pBA0pBA0pFzf314vsy8CaOH97fXChIYUgoYUgoaUawj/d4/ZFwLUiA0zoSGFoCHlK2jWDqwqbZcJDSnfgmZKYzXbZpnQkPIjaKY0VrHXKhMaUnaDZkrDuluN3pzQRA2rjtpk5YCUw6CZ0rDmXpN3JzRRw4ozLZ5aOYgas51t8PQOTdSYJae9rG8KiRqj5TaX/VMOosYoJa0V/diOqNFbaWPFP4cmavRS01aTKPml6WihxZBs8ieFTGvUatVQ8xCZ1sjRehh2m6yEjSO9PtW7rwqEjVTv9XTo7kvcPo38HmvqN3MErmnmDwn+AdSY1GV0yCTEAAAAAElFTkSuQmCC" />
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #14161B; min-height: 100vh; }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+  // ============================================================
+  // PARA SINCRONIZAR ENTRE DISPOSITIVOS (computador + celular):
+  // 1. Crie um projeto gratuito em https://console.firebase.google.com
+  // 2. No menu do projeto: Build > Firestore Database > Criar banco de dados
+  //    (modo produção; qualquer região)
+  // 3. No ícone de engrenagem > Configurações do projeto > Seus apps > Web (</>) 
+  //    copie o objeto "firebaseConfig" gerado
+  // 4. Cole os valores reais no lugar de "SUA_..." abaixo
+  // 5. Em Firestore > Regras, cole a regra sugerida no final deste arquivo
+  //    (comentário FIRESTORE_RULES) e publique
+  // Enquanto os campos abaixo não forem preenchidos, o app usa localStorage
+  // (dados ficam só neste navegador, como antes).
+  // ============================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyA8wR_wNcT6CGj0Lsw7DYTReyvvSp18dDs",
+    authDomain: "to-dos-guidolin.firebaseapp.com",
+    projectId: "to-dos-guidolin",
+    storageBucket: "to-dos-guidolin.firebasestorage.app",
+    messagingSenderId: "893525704242",
+    appId: "1:893525704242:web:2bf5eef11e3dfb85cc862b",
+  };
+
+  const FIREBASE_CONFIGURED = firebaseConfig.apiKey && firebaseConfig.apiKey !== "SUA_API_KEY";
+  let db = null;
+  let docRef = null;
+  if (FIREBASE_CONFIGURED) {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    docRef = db.collection("meus-todos-app").doc("mandato-data-v1");
+  }
+
+  window.storage = {
+    async get(key) {
+      if (docRef) {
+        const snap = await docRef.get();
+        if (!snap.exists) return null;
+        return { key, value: snap.data().value, shared: false };
+      }
+      const raw = localStorage.getItem(key);
+      if (raw === null) return null;
+      return { key, value: raw, shared: false };
+    },
+    async set(key, value) {
+      if (docRef) {
+        await docRef.set({ value, updatedAt: Date.now() });
+        return { key, value, shared: false };
+      }
+      localStorage.setItem(key, value);
+      return { key, value, shared: false };
+    },
+    async delete(key) {
+      if (docRef) {
+        await docRef.delete();
+        return { key, deleted: true, shared: false };
+      }
+      localStorage.removeItem(key);
+      return { key, deleted: true, shared: false };
+    },
+    async list(prefix) {
+      const keys = FIREBASE_CONFIGURED ? ["mandato-data-v1"] : Object.keys(localStorage);
+      return { keys, prefix, shared: false };
+    },
+  };
+
+  // Real-time sync: when another device changes the data, tell the app to reload.
+  if (docRef) {
+    let skipFirst = true;
+    docRef.onSnapshot(() => {
+      if (skipFirst) { skipFirst = false; return; } // app already loads it once on its own
+      window.dispatchEvent(new CustomEvent("meus-todos-remote-update"));
+    });
+  }
+
+  // FIRESTORE_RULES (cole em Firestore > Regras e publique):
+  // rules_version = '2';
+  // service cloud.firestore {
+  //   match /databases/{database}/documents {
+  //     match /meus-todos-app/mandato-data-v1 {
+  //       allow read, write: if true;
+  //     }
+  //   }
+  // }
+</script>
+
+<script type="text/babel" data-presets="react">
+  const { useState, useEffect, useRef, useMemo } = React;
+
+  // ---- minimal inline icon set, replacing lucide-react so this file needs
+  // no build step and no npm install — just open it in a browser. ----
+  function Icon({ children, size = 16, color = "currentColor", fill = "none", strokeWidth = 2, style }) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke={color}
+           strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" style={style}>
+        {children}
+      </svg>
+    );
+  }
+  const Mic = (p) => (
+    <Icon {...p}>
+      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+      <line x1="12" y1="19" x2="12" y2="23" />
+      <line x1="8" y1="23" x2="16" y2="23" />
+    </Icon>
+  );
+  const Plus = (p) => (
+    <Icon {...p}>
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </Icon>
+  );
+  const Check = (p) => (
+    <Icon {...p}>
+      <polyline points="20 6 9 17 4 12" />
+    </Icon>
+  );
+  const Trash2 = (p) => (
+    <Icon {...p}>
+      <path d="M3 6h18" />
+      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+      <line x1="10" y1="11" x2="10" y2="17" />
+      <line x1="14" y1="11" x2="14" y2="17" />
+    </Icon>
+  );
+  const Calendar = (p) => (
+    <Icon {...p}>
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </Icon>
+  );
+  const X = (p) => (
+    <Icon {...p}>
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </Icon>
+  );
+  const AlertCircle = (p) => (
+    <Icon {...p}>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </Icon>
+  );
+  const AlignLeft = (p) => (
+    <Icon {...p}>
+      <line x1="17" y1="10" x2="3" y2="10" />
+      <line x1="21" y1="6" x2="3" y2="6" />
+      <line x1="21" y1="14" x2="3" y2="14" />
+      <line x1="17" y1="18" x2="3" y2="18" />
+    </Icon>
+  );
+  const Settings = (p) => (
+    <Icon {...p}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </Icon>
+  );
+  const Star = (p) => (
+    <Icon {...p}>
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
+    </Icon>
+  );
+
+
+
+const PALETTE = [
+  { id: "brass", hex: "#C9A227" },
+  { id: "steel", hex: "#5B7FBD" },
+  { id: "teal", hex: "#2FA37D" },
+  { id: "clay", hex: "#B85C4C" },
+  { id: "violet", hex: "#8B6DB8" },
+  { id: "slate", hex: "#7A828F" },
+  { id: "crimson", hex: "#C4485C" },
+  { id: "forest", hex: "#4C9A5B" },
+  { id: "indigo", hex: "#6C6FC4" },
+  { id: "coral", hex: "#D9825A" },
+  { id: "cyan", hex: "#3FA8B5" },
+  { id: "magenta", hex: "#B8579A" },
+  { id: "olive", hex: "#9C9440" },
+  { id: "rose", hex: "#D97B96" },
+];
+
+const DEFAULT_CATEGORIES = [
+  { id: "negocios", name: "Negócios", color: "#5B7FBD", subcategories: [] },
+  { id: "pessoal", name: "Pessoal", color: "#2FA37D", subcategories: [] },
+];
+
+const STORAGE_KEY = "mandato-data-v1";
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+function pad3(n) {
+  return String(n).padStart(3, "0");
+}
+
+function formatDue(iso) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  const now = new Date();
+  const sameYear = d.getFullYear() === now.getFullYear();
+  const opts = sameYear
+    ? { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }
+    : { day: "2-digit", month: "short", year: "numeric" };
+  return d.toLocaleString("pt-BR", opts).replace(".", "");
+}
+
+function isOverdue(iso, done) {
+  if (!iso || done) return false;
+  return new Date(iso).getTime() < Date.now();
+}
+
+function StarPicker({ value, onChange, size = 16 }) {
+  return (
+    <div style={{ display: "flex", gap: 3 }}>
+      {[1, 2, 3].map((n) => (
+        <button
+          key={n}
+          type="button"
+          onClick={() => onChange(n)}
+          title={`${n} estrela${n > 1 ? "s" : ""}`}
+          style={{
+            background: "transparent",
+            border: "none",
+            padding: 2,
+            cursor: "pointer",
+            display: "flex",
+          }}
+        >
+          <Star
+            size={size}
+            color={n <= value ? colors.accent : colors.textFaint}
+            fill={n <= value ? colors.accent : "none"}
+            strokeWidth={1.5}
+          />
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function StarDisplay({ value, size = 12 }) {
+  return (
+    <span style={{ display: "inline-flex", gap: 1 }}>
+      {[1, 2, 3].map((n) => (
+        <Star
+          key={n}
+          size={size}
+          color={n <= value ? colors.accent : colors.border}
+          fill={n <= value ? colors.accent : "none"}
+          strokeWidth={1.5}
+        />
+      ))}
+    </span>
+  );
+}
+
+function MeusToDos() {
+  const [todos, setTodos] = useState([]);
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(null);
+  const [loadFailed, setLoadFailed] = useState(false);
+
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeSubFilter, setActiveSubFilter] = useState("all");
+  const [starFilters, setStarFilters] = useState([]); // empty = show all; otherwise array of 1|2|3
+
+  const [draftText, setDraftText] = useState("");
+  const [draftDesc, setDraftDesc] = useState("");
+  const [draftCategory, setDraftCategory] = useState(DEFAULT_CATEGORIES[0].id);
+  const [draftSubcategory, setDraftSubcategory] = useState("");
+  const [draftStars, setDraftStars] = useState(2);
+  const [draftDue, setDraftDue] = useState("");
+  const [showDueField, setShowDueField] = useState(false);
+  const [showDescField, setShowDescField] = useState(false);
+
+  const [editingId, setEditingId] = useState(null);
+  const [editText, setEditText] = useState("");
+  const [editDesc, setEditDesc] = useState("");
+  const [editCategory, setEditCategory] = useState("");
+  const [editSubcategory, setEditSubcategory] = useState("");
+  const [editStars, setEditStars] = useState(2);
+  const [editDue, setEditDue] = useState("");
+
+  const [listening, setListening] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(true);
+  const recognitionRef = useRef(null);
+
+  const [addingCategory, setAddingCategory] = useState(false);
+  const [newCatName, setNewCatName] = useState("");
+  const [newCatColor, setNewCatColor] = useState(PALETTE[0].hex);
+
+  const [addingSubFor, setAddingSubFor] = useState(null); // category id currently adding a subcategory to
+  const [newSubName, setNewSubName] = useState("");
+
+  const [manageOpen, setManageOpen] = useState(false);
+
+  // Load
+  async function loadData() {
+    let res = null;
+    let hadError = false;
+    try {
+      res = await window.storage.get(STORAGE_KEY, false);
+    } catch (e) {
+      hadError = true;
+    }
+    if (hadError) {
+      // could be a transient/network failure rather than "no data yet" — retry once
+      await new Promise((r) => setTimeout(r, 800));
+      try {
+        res = await window.storage.get(STORAGE_KEY, false);
+        hadError = false;
+      } catch (e2) {
+        hadError = true;
+      }
+    }
+    if (res && res.value) {
+      try {
+        const parsed = JSON.parse(res.value);
+        setTodos(parsed.todos || []);
+        const loadedCats =
+          parsed.categories && parsed.categories.length
+            ? parsed.categories
+            : DEFAULT_CATEGORIES;
+        setCategories(
+          loadedCats.map((c) => ({ ...c, subcategories: c.subcategories || [] }))
+        );
+        setError(null);
+        setLoadFailed(false);
+      } catch (e) {
+        // corrupted payload — leave defaults, don't crash
+      }
+    } else if (hadError) {
+      setLoadFailed(true);
+      setError(
+        'Não foi possível carregar seus dados salvos agora. Toque em "tentar novamente" — evite adicionar itens até confirmar, para não sobrescrever o que já existe.'
+      );
+    } else {
+      setLoadFailed(false);
+    }
+    setLoaded(true);
+  }
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // Save (skip the very first render before load completes)
+  const saveTimerRef = useRef(null);
+  const savePayloadRef = useRef(null);
+
+  async function persist(payload) {
+    if (!window.storage || typeof window.storage.set !== "function") {
+      setError("Armazenamento indisponível neste ambiente. Abra o artifact direto no app ou site do Claude para salvar.");
+      return;
+    }
+    try {
+      await window.storage.set(STORAGE_KEY, JSON.stringify(payload), false);
+      setError(null);
+    } catch (e) {
+      // one retry after a short pause — covers transient/rate-limit failures
+      await new Promise((r) => setTimeout(r, 800));
+      try {
+        await window.storage.set(STORAGE_KEY, JSON.stringify(payload), false);
+        setError(null);
+      } catch (e2) {
+        setError("Não foi possível salvar agora. Suas alterações ficam nesta tela — toque em \"tentar novamente\".");
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (!loaded || loadFailed) return;
+    const payload = { todos, categories };
+    savePayloadRef.current = payload;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      persist(payload);
+    }, 400);
+    return () => clearTimeout(saveTimerRef.current);
+  }, [todos, categories, loaded]);
+
+  function retrySave() {
+    if (loadFailed) {
+      loadData();
+    } else if (savePayloadRef.current) {
+      persist(savePayloadRef.current);
+    }
+  }
+
+  // Voice setup
+  useEffect(() => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      setVoiceSupported(false);
+      return;
+    }
+    const rec = new SR();
+    rec.lang = "pt-BR";
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    rec.onresult = (ev) => {
+      const transcript = ev.results[0][0].transcript;
+      setDraftText((prev) => (prev ? prev + " " + transcript : transcript));
+    };
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    recognitionRef.current = rec;
+  }, []);
+
+  function toggleListening() {
+    if (!voiceSupported || !recognitionRef.current) return;
+    if (listening) {
+      recognitionRef.current.stop();
+      setListening(false);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setListening(true);
+      } catch (e) {
+        setListening(false);
+      }
+    }
+  }
+
+  function addTodo() {
+    const text = draftText.trim();
+    if (!text) return;
+    const todo = {
+      id: uid(),
+      text,
+      description: draftDesc.trim() || null,
+      category: draftCategory,
+      subcategory: draftSubcategory || null,
+      stars: draftStars,
+      dueAt: draftDue || null,
+      done: false,
+      createdAt: new Date().toISOString(),
+    };
+    setTodos((prev) => [todo, ...prev]);
+    setDraftText("");
+    setDraftDesc("");
+    setDraftSubcategory("");
+    setDraftStars(2);
+    setDraftDue("");
+    setShowDueField(false);
+    setShowDescField(false);
+  }
+
+  function openEdit(t) {
+    setEditingId(t.id);
+    setEditText(t.text);
+    setEditDesc(t.description || "");
+    setEditCategory(t.category);
+    setEditSubcategory(t.subcategory || "");
+    setEditStars(t.stars || 2);
+    setEditDue(t.dueAt || "");
+  }
+
+  function closeEdit() {
+    setEditingId(null);
+  }
+
+  function saveEdit() {
+    const text = editText.trim();
+    if (!text) return;
+    setTodos((prev) =>
+      prev.map((t) =>
+        t.id === editingId
+          ? {
+              ...t,
+              text,
+              description: editDesc.trim() || null,
+              category: editCategory,
+              subcategory: editSubcategory || null,
+              stars: editStars,
+              dueAt: editDue || null,
+            }
+          : t
+      )
+    );
+    setEditingId(null);
+  }
+
+  function toggleDone(id) {
+    setTodos((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
+    );
+  }
+
+  function removeTodo(id) {
+    setTodos((prev) => prev.filter((t) => t.id !== id));
+  }
+
+  function addCategory() {
+    const name = newCatName.trim();
+    if (!name) return;
+    const cat = { id: uid(), name, color: newCatColor, subcategories: [] };
+    setCategories((prev) => [...prev, cat]);
+    setDraftCategory(cat.id);
+    setDraftSubcategory("");
+    setNewCatName("");
+    setAddingCategory(false);
+  }
+
+  function addSubcategory(categoryId) {
+    const name = newSubName.trim();
+    if (!name) return;
+    const sub = { id: uid(), name };
+    setCategories((prev) =>
+      prev.map((c) =>
+        c.id === categoryId
+          ? { ...c, subcategories: [...(c.subcategories || []), sub] }
+          : c
+      )
+    );
+    if (editingId) {
+      setEditSubcategory(sub.id);
+    } else {
+      setDraftSubcategory(sub.id);
+    }
+    setNewSubName("");
+    setAddingSubFor(null);
+  }
+
+  function removeSubcategory(categoryId, subId) {
+    setCategories((prev) =>
+      prev.map((c) =>
+        c.id === categoryId
+          ? { ...c, subcategories: (c.subcategories || []).filter((s) => s.id !== subId) }
+          : c
+      )
+    );
+    setTodos((prev) =>
+      prev.map((t) =>
+        t.category === categoryId && t.subcategory === subId
+          ? { ...t, subcategory: null }
+          : t
+      )
+    );
+  }
+
+  function updateCategoryName(id, name) {
+    setCategories((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, name } : c))
+    );
+  }
+
+  function updateCategoryColor(id, hex) {
+    setCategories((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, color: hex } : c))
+    );
+  }
+
+  function updateSubcategoryName(categoryId, subId, name) {
+    setCategories((prev) =>
+      prev.map((c) =>
+        c.id === categoryId
+          ? {
+              ...c,
+              subcategories: (c.subcategories || []).map((s) =>
+                s.id === subId ? { ...s, name } : s
+              ),
+            }
+          : c
+      )
+    );
+  }
+
+  function deleteCategory(id) {
+    setCategories((prev) => prev.filter((c) => c.id !== id));
+    setTodos((prev) =>
+      prev.map((t) =>
+        t.category === id ? { ...t, category: null, subcategory: null } : t
+      )
+    );
+    if (draftCategory === id) {
+      setDraftCategory("");
+      setDraftSubcategory("");
+    }
+    if (activeFilter === id) {
+      setActiveFilter("all");
+      setActiveSubFilter("all");
+    }
+  }
+
+  function toggleStarFilter(n) {
+    setStarFilters((prev) =>
+      prev.includes(n) ? prev.filter((x) => x !== n) : [...prev, n]
+    );
+  }
+
+  const catMap = useMemo(() => {
+    const m = {};
+    categories.forEach((c) => (m[c.id] = c));
+    return m;
+  }, [categories]);
+
+  const filtered = useMemo(() => {
+    let list = todos;
+    if (activeFilter !== "all") {
+      list = list.filter((t) => t.category === activeFilter);
+      if (activeSubFilter !== "all") {
+        list = list.filter((t) => t.subcategory === activeSubFilter);
+      }
+    }
+    if (starFilters.length > 0) {
+      list = list.filter((t) => starFilters.includes(t.stars || 2));
+    }
+    return [...list].sort((a, b) => {
+      if (a.done !== b.done) return a.done ? 1 : -1;
+      if (a.dueAt && b.dueAt) return new Date(a.dueAt) - new Date(b.dueAt);
+      if (a.dueAt) return -1;
+      if (b.dueAt) return 1;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+  }, [todos, activeFilter, activeSubFilter, starFilters]);
+
+  const openCount = todos.filter((t) => !t.done).length;
+  const overdueCount = todos.filter((t) => isOverdue(t.dueAt, t.done)).length;
+
+  if (!loaded) {
+    return (
+      <div style={{ ...styles.root, alignItems: "center", justifyContent: "center" }}>
+        <span style={{ color: colors.textSecondary, fontFamily: fonts.mono, fontSize: 15 }}>
+          Carregando pauta…
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app-root" style={styles.root}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,72,500;0,72,600;1,72,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+        * { box-sizing: border-box; }
+        ::selection { background: ${colors.accent}55; }
+        input::placeholder { color: ${colors.textFaint}; }
+        .row-enter { animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+        .strike { text-decoration: line-through; opacity: 0.45; transition: opacity 0.3s ease; }
+        .mic-pulse { animation: pulse 1.4s ease-in-out infinite; }
+        @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 ${colors.accent}55; } 50% { box-shadow: 0 0 0 8px ${colors.accent}00; } }
+        .cat-btn:hover, .filter-btn:hover { filter: brightness(1.15); }
+        .todo-row:hover { background: ${colors.panelHover}; }
+        input[type="datetime-local"] { color-scheme: dark; }
+        @media (prefers-reduced-motion: reduce) {
+          .row-enter, .mic-pulse { animation: none; }
+        }
+        @media (max-width: 480px) {
+          .app-root { padding: 16px 14px 32px !important; gap: 16px !important; }
+          .app-title { font-size: 24px !important; }
+          .header-row { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+          .header-stats { gap: 16px !important; }
+          .stat-num { font-size: 17px !important; }
+          .composer { padding: 12px !important; }
+          .composer-row { flex-wrap: wrap !important; }
+          .composer-row .app-input { flex: 1 1 100% !important; order: -1 !important; }
+          .icon-btn { width: 34px !important; height: 34px !important; }
+          .add-btn span { display: none; }
+          .add-btn { padding: 0 12px !important; }
+          .cat-chip { font-size: 10px !important; padding: 4px 8px !important; }
+          .date-input { width: 100% !important; box-sizing: border-box; }
+          .filter-bar { overflow-x: auto !important; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+          .filter-bar::-webkit-scrollbar { display: none; }
+          .filter-chip { flex-shrink: 0 !important; }
+          .hint-text { display: none !important; }
+          .row { padding: 11px 2px !important; gap: 9px !important; }
+          .row-text { font-size: 14px !important; }
+          .modal { padding: 14px !important; max-width: 100% !important; }
+        }
+      `}</style>
+
+      {/* Header */}
+      <header className="header-row" style={styles.header}>
+        <div>
+          <h1 className="app-title" style={styles.title}>Meus To Dos</h1>
+        </div>
+        <div className="header-stats" style={styles.headerStats}>
+          <div style={styles.statBlock}>
+            <span className="stat-num" style={styles.statNum}>{pad3(openCount)}</span>
+            <span style={styles.statLabel}>em aberto</span>
+          </div>
+          {overdueCount > 0 && (
+            <div style={{ ...styles.statBlock, color: colors.overdue }}>
+              <span className="stat-num" style={{ ...styles.statNum, color: colors.overdue }}>
+                {pad3(overdueCount)}
+              </span>
+              <span style={{ ...styles.statLabel, color: colors.overdue }}>
+                atrasados
+              </span>
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* Composer */}
+      <div className="composer" style={styles.composer}>
+        <div className="composer-row" style={styles.composerRow}>
+          <input
+            className="app-input"
+            style={styles.input}
+            placeholder="Novo item da pauta — descreva a ação…"
+            value={draftText}
+            onChange={(e) => setDraftText(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addTodo()}
+          />
+          {voiceSupported && (
+            <button
+              onClick={toggleListening}
+              title="Ditar por voz"
+              className={listening ? "icon-btn mic-pulse" : "icon-btn"}
+              style={{
+                ...styles.iconBtn,
+                background: listening ? colors.accent : colors.panel,
+                color: listening ? colors.base : colors.textSecondary,
+              }}
+            >
+              <Mic size={19} />
+            </button>
+          )}
+          <button
+            onClick={() => setShowDescField((s) => !s)}
+            title="Adicionar descrição"
+            className="icon-btn"
+            style={{
+              ...styles.iconBtn,
+              background: showDescField || draftDesc ? colors.accentDim : colors.panel,
+              color: showDescField || draftDesc ? colors.accent : colors.textSecondary,
+            }}
+          >
+            <AlignLeft size={19} />
+          </button>
+          <button
+            onClick={() => setShowDueField((s) => !s)}
+            title="Definir prazo"
+            className="icon-btn"
+            style={{
+              ...styles.iconBtn,
+              background: showDueField || draftDue ? colors.accentDim : colors.panel,
+              color: showDueField || draftDue ? colors.accent : colors.textSecondary,
+            }}
+          >
+            <Calendar size={19} />
+          </button>
+          <div style={{ ...styles.iconBtn, background: colors.panel, padding: "0 8px", width: "auto" }}>
+            <StarPicker value={draftStars} onChange={setDraftStars} size={18} />
+          </div>
+          <button onClick={addTodo} className="add-btn" style={styles.addBtn}>
+            <Plus size={19} />
+            <span>Adicionar</span>
+          </button>
+        </div>
+
+        <div style={styles.composerRow2}>
+          <div style={styles.catPicker}>
+            {categories.map((c) => (
+              <button
+                key={c.id}
+                className="cat-btn cat-chip"
+                onClick={() => {
+                  setDraftCategory(c.id);
+                  setDraftSubcategory("");
+                  setAddingSubFor(null);
+                }}
+                style={{
+                  ...styles.catChip,
+                  borderColor: draftCategory === c.id ? c.color : colors.border,
+                  color: draftCategory === c.id ? c.color : colors.textSecondary,
+                  background: draftCategory === c.id ? c.color + "1A" : "transparent",
+                }}
+              >
+                {c.name}
+              </button>
+            ))}
+            <button
+              className="cat-btn cat-chip"
+              onClick={() => setAddingCategory((s) => !s)}
+              style={{ ...styles.catChip, borderStyle: "dashed", color: colors.textFaint }}
+            >
+              + categoria
+            </button>
+            <button
+              className="cat-btn"
+              onClick={() => setManageOpen(true)}
+              title="Editar categorias"
+              style={{ ...styles.catChip, display: "flex", alignItems: "center", padding: "5px 8px", color: colors.textFaint }}
+            >
+              <Settings size={18} />
+            </button>
+          </div>
+
+          {showDueField && (
+            <input
+              type="datetime-local"
+              className="date-input"
+              value={draftDue}
+              onChange={(e) => setDraftDue(e.target.value)}
+              style={styles.dateInput}
+            />
+          )}
+        </div>
+
+        {catMap[draftCategory] && (
+          <div style={styles.subPicker}>
+            {(catMap[draftCategory]?.subcategories || []).map((s) => (
+              <button
+                key={s.id}
+                className="cat-btn"
+                onClick={() =>
+                  setDraftSubcategory((prev) => (prev === s.id ? "" : s.id))
+                }
+                style={{
+                  ...styles.subChip,
+                  borderColor: draftSubcategory === s.id ? catMap[draftCategory].color : colors.border,
+                  color: draftSubcategory === s.id ? catMap[draftCategory].color : colors.textFaint,
+                  background: draftSubcategory === s.id ? catMap[draftCategory].color + "1A" : "transparent",
+                }}
+              >
+                {s.name}
+              </button>
+            ))}
+            {addingSubFor === draftCategory ? (
+              <div style={styles.newCatRow}>
+                <input
+                  style={{ ...styles.input, flex: 1, padding: "6px 10px", fontSize: 14.5 }}
+                  placeholder="Nome da subcategoria"
+                  value={newSubName}
+                  onChange={(e) => setNewSubName(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addSubcategory(draftCategory)}
+                  autoFocus
+                />
+                <button onClick={() => addSubcategory(draftCategory)} style={styles.smallBtn}>
+                  Criar
+                </button>
+                <button onClick={() => setAddingSubFor(null)} style={styles.smallBtnGhost}>
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <button
+                className="cat-btn"
+                onClick={() => setAddingSubFor(draftCategory)}
+                style={{ ...styles.subChip, borderStyle: "dashed" }}
+              >
+                + subcategoria
+              </button>
+            )}
+          </div>
+        )}
+
+        {showDescField && (
+          <textarea
+            style={styles.textarea}
+            placeholder="Descrição — contexto, próximos passos, quem está envolvido…"
+            value={draftDesc}
+            onChange={(e) => setDraftDesc(e.target.value)}
+            rows={2}
+          />
+        )}
+
+        {addingCategory && (
+          <div style={styles.newCatRow}>
+            <input
+              style={{ ...styles.input, flex: 1 }}
+              placeholder="Nome da categoria"
+              value={newCatName}
+              onChange={(e) => setNewCatName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && addCategory()}
+              autoFocus
+            />
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", maxWidth: 220 }}>
+              {PALETTE.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => setNewCatColor(p.hex)}
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: "50%",
+                    background: p.hex,
+                    border: newCatColor === p.hex ? `2px solid ${colors.text}` : "2px solid transparent",
+                    cursor: "pointer",
+                  }}
+                />
+              ))}
+            </div>
+            <button onClick={addCategory} style={styles.smallBtn}>
+              Criar
+            </button>
+            <button onClick={() => setAddingCategory(false)} style={styles.smallBtnGhost}>
+              <X size={14} />
+            </button>
+          </div>
+        )}
+
+        {!voiceSupported && (
+          <div style={styles.voiceWarning}>
+            <AlertCircle size={12} />
+            <span>Ditado por voz não é suportado neste navegador.</span>
+          </div>
+        )}
+      </div>
+
+      {/* Filters */}
+      <div className="filter-bar" style={styles.filterBar}>
+        <button
+          className="filter-btn filter-chip"
+          onClick={() => {
+            setActiveFilter("all");
+            setActiveSubFilter("all");
+          }}
+          style={{
+            ...styles.filterChip,
+            color: activeFilter === "all" ? colors.text : colors.textSecondary,
+            borderBottomColor: activeFilter === "all" ? colors.accent : "transparent",
+          }}
+        >
+          Todos
+        </button>
+        {categories.map((c) => (
+          <button
+            key={c.id}
+            className="filter-btn filter-chip"
+            onClick={() => {
+              setActiveFilter(c.id);
+              setActiveSubFilter("all");
+            }}
+            style={{
+              ...styles.filterChip,
+              color: activeFilter === c.id ? c.color : colors.textSecondary,
+              borderBottomColor: activeFilter === c.id ? c.color : "transparent",
+            }}
+          >
+            {c.name}
+          </button>
+        ))}
+        <div style={{ flex: 1 }} />
+        <span className="hint-text" style={styles.hintText}>toque num item para editar</span>
+      </div>
+
+      {activeFilter !== "all" && (catMap[activeFilter]?.subcategories || []).length > 0 && (
+        <div className="filter-bar" style={styles.subFilterBar}>
+          <button
+            className="filter-btn filter-chip"
+            onClick={() => setActiveSubFilter("all")}
+            style={{
+              ...styles.subFilterChip,
+              color: activeSubFilter === "all" ? colors.text : colors.textFaint,
+              borderColor: activeSubFilter === "all" ? colors.textSecondary : colors.border,
+            }}
+          >
+            todas
+          </button>
+          {catMap[activeFilter].subcategories.map((s) => (
+            <button
+              key={s.id}
+              className="filter-btn filter-chip"
+              onClick={() => setActiveSubFilter(s.id)}
+              style={{
+                ...styles.subFilterChip,
+                color: activeSubFilter === s.id ? catMap[activeFilter].color : colors.textFaint,
+                borderColor: activeSubFilter === s.id ? catMap[activeFilter].color : colors.border,
+              }}
+            >
+              {s.name}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="filter-bar" style={styles.subFilterBar}>
+        <span style={styles.starFilterLabel}>importância:</span>
+        {[1, 2, 3].map((n) => {
+          const active = starFilters.includes(n);
+          return (
+            <button
+              key={n}
+              className="filter-btn filter-chip"
+              onClick={() => toggleStarFilter(n)}
+              style={{
+                ...styles.subFilterChip,
+                display: "inline-flex",
+                alignItems: "center",
+                borderColor: active ? colors.accent : colors.border,
+                background: active ? colors.accentDim : "transparent",
+              }}
+            >
+              <StarDisplay value={n} size={14} />
+            </button>
+          );
+        })}
+      </div>
+
+      {/* List */}
+      <div style={styles.list}>
+        {filtered.length === 0 && (
+          <div style={styles.empty}>
+            <span style={styles.emptyText}>Nenhum item aqui.</span>
+            <span style={styles.emptySub}>A pauta está limpa — ou é hora de adicionar algo.</span>
+          </div>
+        )}
+        {filtered.map((t, i) => {
+          const cat = catMap[t.category];
+          const overdue = isOverdue(t.dueAt, t.done);
+          return (
+            <div
+              key={t.id}
+              className="todo-row row-enter row"
+              style={styles.row}
+              onClick={() => openEdit(t)}
+            >
+              <span style={styles.rowIndex}>{pad3(i + 1)}</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleDone(t.id);
+                }}
+                style={{
+                  ...styles.checkbox,
+                  borderColor: t.done ? colors.accent : colors.border,
+                  background: t.done ? colors.accent : "transparent",
+                }}
+              >
+                {t.done && <Check size={12} color={colors.base} strokeWidth={3} />}
+              </button>
+              <div style={styles.rowBody}>
+                <div style={styles.rowTitleLine}>
+                  <span className={t.done ? "strike row-text" : "row-text"} style={styles.rowText}>
+                    {t.text}
+                  </span>
+                  <StarDisplay value={t.stars || 2} size={11} />
+                </div>
+                {t.description && (
+                  <span className={t.done ? "strike" : ""} style={styles.rowDesc}>
+                    {t.description}
+                  </span>
+                )}
+                <div style={styles.rowMeta}>
+                  {cat && (
+                    <span style={{ ...styles.tag, borderColor: cat.color, color: cat.color }}>
+                      {cat.name}
+                    </span>
+                  )}
+                  {cat && t.subcategory && (
+                    <span style={{ ...styles.tag, borderColor: colors.border, color: colors.textSecondary }}>
+                      {(cat.subcategories || []).find((s) => s.id === t.subcategory)?.name || ""}
+                    </span>
+                  )}
+                  {t.dueAt && (
+                    <span
+                      style={{
+                        ...styles.dueTag,
+                        color: overdue ? colors.overdue : colors.textSecondary,
+                      }}
+                    >
+                      <Calendar size={11} />
+                      {formatDue(t.dueAt)}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeTodo(t.id);
+                }}
+                style={styles.deleteBtn}
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      {error && (
+        <div style={styles.errorBar}>
+          <span>{error}</span>
+          <button onClick={retrySave} style={styles.retryBtn}>
+            tentar novamente
+          </button>
+        </div>
+      )}
+
+      {editingId && (
+        <div style={styles.modalBackdrop} onClick={closeEdit}>
+          <div className="modal" style={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalHeader}>
+              <span style={styles.modalEyebrow}>EDITAR ITEM</span>
+              <button onClick={closeEdit} style={styles.smallBtnGhost}>
+                <X size={14} />
+              </button>
+            </div>
+
+            <label style={styles.fieldLabel}>Título</label>
+            <input
+              style={styles.input}
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              autoFocus
+            />
+
+            <label style={styles.fieldLabel}>Descrição</label>
+            <textarea
+              style={styles.textarea}
+              rows={3}
+              value={editDesc}
+              onChange={(e) => setEditDesc(e.target.value)}
+              placeholder="Contexto, próximos passos, quem está envolvido…"
+            />
+
+            <label style={styles.fieldLabel}>Categoria</label>
+            <div style={styles.catPicker}>
+              {categories.map((c) => (
+                <button
+                  key={c.id}
+                  className="cat-btn"
+                  onClick={() => {
+                    setEditCategory(c.id);
+                    setEditSubcategory("");
+                    setAddingSubFor(null);
+                  }}
+                  style={{
+                    ...styles.catChip,
+                    borderColor: editCategory === c.id ? c.color : colors.border,
+                    color: editCategory === c.id ? c.color : colors.textSecondary,
+                    background: editCategory === c.id ? c.color + "1A" : "transparent",
+                  }}
+                >
+                  {c.name}
+                </button>
+              ))}
+            </div>
+
+            {catMap[editCategory] && (
+              <div style={styles.subPicker}>
+                {(catMap[editCategory].subcategories || []).map((s) => (
+                  <button
+                    key={s.id}
+                    className="cat-btn"
+                    onClick={() =>
+                      setEditSubcategory((prev) => (prev === s.id ? "" : s.id))
+                    }
+                    style={{
+                      ...styles.subChip,
+                      borderColor: editSubcategory === s.id ? catMap[editCategory].color : colors.border,
+                      color: editSubcategory === s.id ? catMap[editCategory].color : colors.textFaint,
+                      background: editSubcategory === s.id ? catMap[editCategory].color + "1A" : "transparent",
+                    }}
+                  >
+                    {s.name}
+                  </button>
+                ))}
+                {addingSubFor === editCategory ? (
+                  <div style={styles.newCatRow}>
+                    <input
+                      style={{ ...styles.input, flex: 1, padding: "6px 10px", fontSize: 14.5 }}
+                      placeholder="Nome da subcategoria"
+                      value={newSubName}
+                      onChange={(e) => setNewSubName(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && addSubcategory(editCategory)}
+                      autoFocus
+                    />
+                    <button onClick={() => addSubcategory(editCategory)} style={styles.smallBtn}>
+                      Criar
+                    </button>
+                    <button onClick={() => setAddingSubFor(null)} style={styles.smallBtnGhost}>
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="cat-btn"
+                    onClick={() => setAddingSubFor(editCategory)}
+                    style={{ ...styles.subChip, borderStyle: "dashed" }}
+                  >
+                    + subcategoria
+                  </button>
+                )}
+              </div>
+            )}
+
+            <label style={styles.fieldLabel}>Importância</label>
+            <StarPicker value={editStars} onChange={setEditStars} size={18} />
+
+            <label style={styles.fieldLabel}>Prazo</label>
+            <input
+              type="datetime-local"
+              value={editDue}
+              onChange={(e) => setEditDue(e.target.value)}
+              style={{ ...styles.dateInput, width: "100%" }}
+            />
+
+            <div style={styles.modalActions}>
+              <button
+                onClick={() => {
+                  removeTodo(editingId);
+                  setEditingId(null);
+                }}
+                style={styles.modalDeleteBtn}
+              >
+                <Trash2 size={14} />
+                <span>Excluir</span>
+              </button>
+              <div style={{ flex: 1 }} />
+              <button onClick={closeEdit} style={styles.smallBtnGhost}>
+                Cancelar
+              </button>
+              <button onClick={saveEdit} style={styles.smallBtn}>
+                Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {manageOpen && (
+        <div style={styles.modalBackdrop} onClick={() => setManageOpen(false)}>
+          <div className="modal" style={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalHeader}>
+              <span style={styles.modalEyebrow}>EDITAR CATEGORIAS</span>
+              <button onClick={() => setManageOpen(false)} style={styles.smallBtnGhost}>
+                <X size={14} />
+              </button>
+            </div>
+
+            {categories.length === 0 && (
+              <span style={{ ...styles.rowDesc, padding: "8px 0" }}>
+                Nenhuma categoria criada ainda.
+              </span>
+            )}
+
+            {categories.map((c) => (
+              <div key={c.id} style={styles.manageCatBlock}>
+                <div style={styles.manageCatRow}>
+                  <input
+                    style={{ ...styles.input, flex: 1 }}
+                    value={c.name}
+                    onChange={(e) => updateCategoryName(c.id, e.target.value)}
+                  />
+                  <button
+                    onClick={() => deleteCategory(c.id)}
+                    title="Excluir categoria"
+                    style={styles.smallBtnGhost}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", maxWidth: 220 }}>
+                  {PALETTE.map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => updateCategoryColor(c.id, p.hex)}
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: "50%",
+                        background: p.hex,
+                        border: c.color === p.hex ? `2px solid ${colors.text}` : "2px solid transparent",
+                        cursor: "pointer",
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {(c.subcategories || []).length > 0 && (
+                  <div style={styles.manageSubList}>
+                    {c.subcategories.map((s) => (
+                      <div key={s.id} style={styles.manageSubRow}>
+                        <input
+                          style={{ ...styles.input, flex: 1, padding: "6px 10px", fontSize: 14.5 }}
+                          value={s.name}
+                          onChange={(e) => updateSubcategoryName(c.id, s.id, e.target.value)}
+                        />
+                        <button
+                          onClick={() => removeSubcategory(c.id, s.id)}
+                          title="Excluir subcategoria"
+                          style={styles.smallBtnGhost}
+                        >
+                          <X size={13} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+
+            <div style={styles.modalActions}>
+              <div style={{ flex: 1 }} />
+              <button onClick={() => setManageOpen(false)} style={styles.smallBtn}>
+                Concluído
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const colors = {
+  base: "#14161B",
+  panel: "#1C1F26",
+  panelHover: "#22252D",
+  border: "#3D4049",
+  text: "#FFFFFF",
+  textSecondary: "#C7CAD3",
+  textFaint: "#9298A6",
+  accent: "#C9A227",
+  accentDim: "#C9A22722",
+  overdue: "#C9694F",
+};
+
+const fonts = {
+  display: "'Newsreader', Georgia, serif",
+  body: "'Inter', -apple-system, sans-serif",
+  mono: "'IBM Plex Mono', 'SF Mono', monospace",
+};
+
+const styles = {
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "100%",
+    background: colors.base,
+    color: colors.text,
+    fontFamily: fonts.body,
+    padding: "28px 24px 40px",
+    gap: 20,
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    borderBottom: `1px solid ${colors.border}`,
+    paddingBottom: 16,
+  },
+  eyebrow: {
+    fontFamily: fonts.mono,
+    fontSize: 12.5,
+    letterSpacing: "0.14em",
+    color: colors.accent,
+    marginBottom: 4,
+  },
+  title: {
+    fontFamily: fonts.display,
+    fontStyle: "italic",
+    fontWeight: 600,
+    fontSize: 39,
+    margin: 0,
+    color: colors.text,
+  },
+  headerStats: { display: "flex", gap: 24 },
+  statBlock: { display: "flex", flexDirection: "column", alignItems: "flex-end" },
+  statNum: { fontFamily: fonts.mono, fontSize: 23, color: colors.text, lineHeight: 1 },
+  statLabel: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textFaint, letterSpacing: "0.06em" },
+
+  composer: {
+    background: colors.panel,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 10,
+    padding: 14,
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+  },
+  composerRow: { display: "flex", gap: 8 },
+  composerRow2: { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 },
+  input: {
+    flex: 1,
+    background: colors.base,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 7,
+    padding: "10px 12px",
+    color: colors.text,
+    fontFamily: fonts.body,
+    fontSize: 16,
+    outline: "none",
+  },
+  dateInput: {
+    background: colors.base,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 7,
+    padding: "7px 10px",
+    color: colors.text,
+    fontFamily: fonts.mono,
+    fontSize: 14,
+    outline: "none",
+  },
+  textarea: {
+    width: "100%",
+    background: colors.base,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 7,
+    padding: "10px 12px",
+    color: colors.text,
+    fontFamily: fonts.body,
+    fontSize: 15.5,
+    outline: "none",
+    resize: "vertical",
+  },
+  iconBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    border: `1px solid ${colors.border}`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    flexShrink: 0,
+  },
+  addBtn: {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    background: colors.accent,
+    color: colors.base,
+    border: "none",
+    borderRadius: 8,
+    padding: "0 20px",
+    fontFamily: fonts.body,
+    fontWeight: 600,
+    fontSize: 17,
+    cursor: "pointer",
+    flexShrink: 0,
+  },
+  catPicker: { display: "flex", gap: 6, flexWrap: "wrap" },
+  catChip: {
+    fontFamily: fonts.mono,
+    fontWeight: 600,
+    fontSize: 14.5,
+    padding: "7px 13px",
+    borderRadius: 20,
+    border: `1px solid ${colors.border}`,
+    background: "transparent",
+    cursor: "pointer",
+  },
+  subPicker: {
+    display: "flex",
+    gap: 6,
+    flexWrap: "wrap",
+    paddingLeft: 14,
+    borderLeft: `1px dashed ${colors.border}`,
+  },
+  subChip: {
+    fontFamily: fonts.mono,
+    fontWeight: 600,
+    fontSize: 14,
+    padding: "6px 12px",
+    borderRadius: 20,
+    border: `1px solid ${colors.border}`,
+    background: "transparent",
+    cursor: "pointer",
+  },
+  newCatRow: { display: "flex", alignItems: "center", gap: 8 },
+  smallBtn: {
+    background: colors.accent,
+    color: colors.base,
+    border: "none",
+    borderRadius: 6,
+    padding: "8px 12px",
+    fontSize: 14,
+    fontWeight: 600,
+    cursor: "pointer",
+    fontFamily: fonts.body,
+  },
+  smallBtnGhost: {
+    background: "transparent",
+    color: colors.textSecondary,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 6,
+    padding: "8px 10px",
+    cursor: "pointer",
+  },
+  voiceWarning: {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    fontFamily: fonts.mono,
+    fontSize: 12.5,
+    color: colors.textFaint,
+  },
+
+  filterBar: {
+    display: "flex",
+    gap: 4,
+    alignItems: "center",
+    borderBottom: `1px solid ${colors.border}`,
+  },
+  filterChip: {
+    fontFamily: fonts.mono,
+    fontWeight: 600,
+    fontSize: 16,
+    letterSpacing: "0.03em",
+    background: "transparent",
+    border: "none",
+    borderBottom: "2px solid transparent",
+    padding: "10px 4px",
+    marginRight: 16,
+    cursor: "pointer",
+  },
+  hintText: {
+    fontFamily: fonts.mono,
+    fontSize: 13,
+    color: colors.textFaint,
+  },
+  subFilterBar: {
+    display: "flex",
+    gap: 8,
+    alignItems: "center",
+    flexWrap: "wrap",
+    borderBottom: "none",
+    marginTop: -8,
+  },
+  subFilterChip: {
+    fontFamily: fonts.mono,
+    fontWeight: 600,
+    fontSize: 14.5,
+    background: "transparent",
+    border: `1px solid ${colors.border}`,
+    borderRadius: 20,
+    padding: "6px 13px",
+    marginRight: 0,
+    cursor: "pointer",
+  },
+  starFilterLabel: {
+    fontFamily: fonts.mono,
+    fontSize: 13,
+    color: colors.textFaint,
+    letterSpacing: "0.04em",
+  },
+
+  list: { display: "flex", flexDirection: "column" },
+  row: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: 12,
+    padding: "12px 6px",
+    borderBottom: `1px solid ${colors.border}`,
+    borderRadius: 6,
+    cursor: "pointer",
+  },
+  rowIndex: {
+    fontFamily: fonts.mono,
+    fontSize: 12.5,
+    color: colors.textFaint,
+    paddingTop: 3,
+    minWidth: 24,
+  },
+  checkbox: {
+    width: 18,
+    height: 18,
+    borderRadius: "50%",
+    border: `1.5px solid ${colors.border}`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    flexShrink: 0,
+    marginTop: 2,
+    background: "transparent",
+  },
+  rowBody: { flex: 1, display: "flex", flexDirection: "column", gap: 6 },
+  rowTitleLine: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10,
+  },
+  rowText: { fontSize: 16.5, lineHeight: 1.4, color: colors.text, fontWeight: 600 },
+  rowDesc: { fontSize: 14.5, lineHeight: 1.4, color: colors.textSecondary },
+  rowMeta: { display: "flex", gap: 8, flexWrap: "wrap" },
+  tag: {
+    fontFamily: fonts.mono,
+    fontWeight: 600,
+    fontSize: 11.5,
+    padding: "2px 8px",
+    borderRadius: 20,
+    border: "1px solid currentColor",
+  },
+  dueTag: {
+    fontFamily: fonts.mono,
+    fontWeight: 600,
+    fontSize: 11.5,
+    display: "flex",
+    alignItems: "center",
+    gap: 4,
+  },
+  deleteBtn: {
+    background: "transparent",
+    border: "none",
+    color: colors.textFaint,
+    cursor: "pointer",
+    padding: 4,
+    flexShrink: 0,
+  },
+  empty: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 4,
+    padding: "40px 0",
+    alignItems: "center",
+  },
+  emptyText: { fontFamily: fonts.display, fontStyle: "italic", fontSize: 20.5, color: colors.textSecondary },
+  emptySub: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textFaint },
+  errorBar: {
+    fontFamily: fonts.mono,
+    fontSize: 12.5,
+    color: colors.overdue,
+    textAlign: "center",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    flexWrap: "wrap",
+    padding: "8px 4px",
+  },
+  retryBtn: {
+    fontFamily: fonts.mono,
+    fontSize: 12.5,
+    color: colors.accent,
+    background: "transparent",
+    border: `1px solid ${colors.accent}55`,
+    borderRadius: 6,
+    padding: "4px 10px",
+    cursor: "pointer",
+    flexShrink: 0,
+  },
+
+  modalBackdrop: {
+    position: "fixed",
+    inset: 0,
+    background: "#0A0B0E99",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    zIndex: 50,
+  },
+  modal: {
+    background: colors.panel,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 12,
+    padding: 20,
+    width: "100%",
+    maxWidth: 420,
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+    maxHeight: "85vh",
+    overflowY: "auto",
+  },
+  modalHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  modalEyebrow: {
+    fontFamily: fonts.mono,
+    fontSize: 12.5,
+    letterSpacing: "0.12em",
+    color: colors.accent,
+  },
+  fieldLabel: {
+    fontFamily: fonts.mono,
+    fontSize: 11.5,
+    letterSpacing: "0.06em",
+    color: colors.textFaint,
+    marginTop: 4,
+  },
+  modalActions: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 8,
+  },
+  modalDeleteBtn: {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    background: "transparent",
+    border: `1px solid ${colors.overdue}55`,
+    color: colors.overdue,
+    borderRadius: 6,
+    padding: "8px 12px",
+    fontSize: 14,
+    cursor: "pointer",
+    fontFamily: fonts.body,
+  },
+  manageCatBlock: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    padding: "10px 0",
+    borderBottom: `1px solid ${colors.border}`,
+  },
+  manageCatRow: { display: "flex", gap: 8, alignItems: "center" },
+  manageSubList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 6,
+    paddingLeft: 14,
+    borderLeft: `1px dashed ${colors.border}`,
+  },
+  manageSubRow: { display: "flex", gap: 6, alignItems: "center" },
+};
+
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(<MeusToDos />);
+</script>
+</body>
+</html>
