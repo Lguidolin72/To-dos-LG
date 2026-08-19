@@ -189,6 +189,16 @@
       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
     </Icon>
   );
+  const ChevronUp = (p) => (
+    <Icon {...p}>
+      <polyline points="18 15 12 9 6 15" />
+    </Icon>
+  );
+  const ChevronDown = (p) => (
+    <Icon {...p}>
+      <polyline points="6 9 12 15 18 9" />
+    </Icon>
+  );
 
 
 const PALETTE = [
@@ -595,6 +605,17 @@ function MeusToDos() {
           : c
       )
     );
+  }
+
+  function moveCategory(id, direction) {
+    setCategories((prev) => {
+      const index = prev.findIndex((c) => c.id === id);
+      const swapWith = direction === "up" ? index - 1 : index + 1;
+      if (index < 0 || swapWith < 0 || swapWith >= prev.length) return prev;
+      const next = [...prev];
+      [next[index], next[swapWith]] = [next[swapWith], next[index]];
+      return next;
+    });
   }
 
   function deleteCategory(id) {
@@ -1263,9 +1284,27 @@ function MeusToDos() {
               </span>
             )}
 
-            {categories.map((c) => (
+            {categories.map((c, idx) => (
               <div key={c.id} style={styles.manageCatBlock}>
                 <div style={styles.manageCatRow}>
+                  <div style={styles.reorderCol}>
+                    <button
+                      onClick={() => moveCategory(c.id, "up")}
+                      disabled={idx === 0}
+                      title="Mover para cima"
+                      style={{ ...styles.reorderBtn, opacity: idx === 0 ? 0.3 : 1 }}
+                    >
+                      <ChevronUp size={14} />
+                    </button>
+                    <button
+                      onClick={() => moveCategory(c.id, "down")}
+                      disabled={idx === categories.length - 1}
+                      title="Mover para baixo"
+                      style={{ ...styles.reorderBtn, opacity: idx === categories.length - 1 ? 0.3 : 1 }}
+                    >
+                      <ChevronDown size={14} />
+                    </button>
+                  </div>
                   <input
                     style={{ ...styles.input, flex: 1 }}
                     value={c.name}
@@ -1733,6 +1772,23 @@ const styles = {
     borderBottom: `1px solid ${colors.border}`,
   },
   manageCatRow: { display: "flex", gap: 8, alignItems: "center" },
+  reorderCol: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
+    flexShrink: 0,
+  },
+  reorderBtn: {
+    background: "transparent",
+    border: `1px solid ${colors.border}`,
+    borderRadius: 4,
+    color: colors.textSecondary,
+    padding: 2,
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   manageSubList: {
     display: "flex",
     flexDirection: "column",
