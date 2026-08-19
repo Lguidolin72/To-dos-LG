@@ -188,7 +188,6 @@
   );
 
 
-
 const PALETTE = [
   { id: "brass", hex: "#C9A227" },
   { id: "steel", hex: "#5B7FBD" },
@@ -662,6 +661,7 @@ function MeusToDos() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,72,500;0,72,600;1,72,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
         * { box-sizing: border-box; }
+        button { color: inherit; -webkit-tap-highlight-color: transparent; }
         ::selection { background: ${colors.accent}55; }
         input::placeholder { color: ${colors.textFaint}; }
         .row-enter { animation: fadeIn 0.25s ease; }
@@ -677,10 +677,11 @@ function MeusToDos() {
         }
         @media (max-width: 480px) {
           .app-root { padding: 16px 14px 32px !important; gap: 16px !important; }
-          .app-title { font-size: 24px !important; }
-          .header-row { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
-          .header-stats { gap: 16px !important; }
-          .stat-num { font-size: 17px !important; }
+          .app-title { font-size: 20px !important; }
+          .header-row { flex-direction: row !important; align-items: center !important; gap: 8px !important; }
+          .header-stats { gap: 12px !important; flex-shrink: 0; }
+          .stat-num { font-size: 15px !important; }
+          .stat-label { font-size: 9px !important; }
           .composer { padding: 12px !important; }
           .composer-row { flex-wrap: wrap !important; }
           .composer-row .app-input { flex: 1 1 100% !important; order: -1 !important; }
@@ -707,14 +708,14 @@ function MeusToDos() {
         <div className="header-stats" style={styles.headerStats}>
           <div style={styles.statBlock}>
             <span className="stat-num" style={styles.statNum}>{pad3(openCount)}</span>
-            <span style={styles.statLabel}>em aberto</span>
+            <span className="stat-label" style={styles.statLabel}>em aberto</span>
           </div>
           {overdueCount > 0 && (
             <div style={{ ...styles.statBlock, color: colors.overdue }}>
               <span className="stat-num" style={{ ...styles.statNum, color: colors.overdue }}>
                 {pad3(overdueCount)}
               </span>
-              <span style={{ ...styles.statLabel, color: colors.overdue }}>
+              <span className="stat-label" style={{ ...styles.statLabel, color: colors.overdue }}>
                 atrasados
               </span>
             </div>
@@ -1478,6 +1479,7 @@ const styles = {
     fontFamily: fonts.mono,
     fontWeight: 600,
     fontSize: 14,
+    color: colors.textFaint,
     padding: "6px 12px",
     borderRadius: 20,
     border: `1px solid ${colors.border}`,
