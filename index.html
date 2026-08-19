@@ -607,6 +607,21 @@ function MeusToDos() {
     );
   }
 
+  function moveSubcategory(categoryId, subId, direction) {
+    setCategories((prev) =>
+      prev.map((c) => {
+        if (c.id !== categoryId) return c;
+        const subs = c.subcategories || [];
+        const index = subs.findIndex((s) => s.id === subId);
+        const swapWith = direction === "up" ? index - 1 : index + 1;
+        if (index < 0 || swapWith < 0 || swapWith >= subs.length) return c;
+        const next = [...subs];
+        [next[index], next[swapWith]] = [next[swapWith], next[index]];
+        return { ...c, subcategories: next };
+      })
+    );
+  }
+
   function moveCategory(id, direction) {
     setCategories((prev) => {
       const index = prev.findIndex((c) => c.id === id);
@@ -1338,8 +1353,26 @@ function MeusToDos() {
 
                 {(c.subcategories || []).length > 0 && (
                   <div style={styles.manageSubList}>
-                    {c.subcategories.map((s) => (
+                    {c.subcategories.map((s, sIdx) => (
                       <div key={s.id} style={styles.manageSubRow}>
+                        <div style={styles.reorderCol}>
+                          <button
+                            onClick={() => moveSubcategory(c.id, s.id, "up")}
+                            disabled={sIdx === 0}
+                            title="Mover para cima"
+                            style={{ ...styles.reorderBtn, opacity: sIdx === 0 ? 0.3 : 1 }}
+                          >
+                            <ChevronUp size={12} />
+                          </button>
+                          <button
+                            onClick={() => moveSubcategory(c.id, s.id, "down")}
+                            disabled={sIdx === c.subcategories.length - 1}
+                            title="Mover para baixo"
+                            style={{ ...styles.reorderBtn, opacity: sIdx === c.subcategories.length - 1 ? 0.3 : 1 }}
+                          >
+                            <ChevronDown size={12} />
+                          </button>
+                        </div>
                         <input
                           style={{ ...styles.input, flex: 1, padding: "6px 10px", fontSize: 14.5 }}
                           value={s.name}
