@@ -199,6 +199,12 @@
       <polyline points="6 9 12 15 18 9" />
     </Icon>
   );
+  const Camera = (p) => (
+    <Icon {...p}>
+      <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+      <circle cx="12" cy="13" r="3" />
+    </Icon>
+  );
 
 
 const PALETTE = [
@@ -224,6 +230,7 @@ const DEFAULT_CATEGORIES = [
 ];
 
 const STORAGE_KEY = "mandato-data-v1";
+const VISION_WORKER_URL = "https://to-dolgphoto.guidolin.workers.dev/";
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -334,6 +341,15 @@ function MeusToDos() {
   const [newSubName, setNewSubName] = useState("");
 
   const [manageOpen, setManageOpen] = useState(false);
+
+  const photoInputRef = useRef(null);
+  const [photoModalOpen, setPhotoModalOpen] = useState(false);
+  const [photoProcessing, setPhotoProcessing] = useState(false);
+  const [photoError, setPhotoError] = useState(null);
+  const [photoTasks, setPhotoTasks] = useState([]); // [{ id, text, checked }]
+  const [photoImportCategory, setPhotoImportCategory] = useState("");
+  const [photoImportSubcategory, setPhotoImportSubcategory] = useState("");
+  const [photoImportStars, setPhotoImportStars] = useState(2);
 
   // Load
   async function loadData() {
@@ -622,6 +638,108 @@ function MeusToDos() {
     );
   }
 
+  function openPhotoCapture() {
+    if (photoInputRef.current) photoInputRef.current.click();
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result || "";
+        const base64 = result.split(",")[1] || "";
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handlePhotoSelected(e) {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = ""; // allow selecting the same file again later
+    if (!file) return;
+
+    setPhotoModalOpen(true);
+    setPhotoProcessing(true);
+    setPhotoError(null);
+    setPhotoTasks([]);
+    setPhotoImportCategory(categories[0]?.id || "");
+    setPhotoImportSubcategory("");
+    setPhotoImportStars(2);
+
+    try {
+      const base64 = await fileToBase64(file);
+      const res = await fetch(VISION_WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64, mediaType: file.type || "image/jpeg" }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setPhotoError(
+          "Não consegui ler a foto agora. Tente novamente com mais luz ou mais perto do texto."
+        );
+      } else {
+        const tasks = (data.tasks || []).map((t) => ({
+          id: uid(),
+          text: t,
+          checked: true,
+        }));
+        if (tasks.length === 0) {
+          setPhotoError("Não encontrei nenhuma tarefa nessa foto.");
+        }
+        setPhotoTasks(tasks);
+      }
+    } catch (err) {
+      setPhotoError("Falha de conexão ao analisar a foto. Verifique a internet e tente de novo.");
+    } finally {
+      setPhotoProcessing(false);
+    }
+  }
+
+  function togglePhotoTask(id) {
+    setPhotoTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, checked: !t.checked } : t))
+    );
+  }
+
+  function updatePhotoTaskText(id, text) {
+    setPhotoTasks((prev) => prev.map((t) => (t.id === id ? { ...t, text } : t)));
+  }
+
+  function removePhotoTask(id) {
+    setPhotoTasks((prev) => prev.filter((t) => t.id !== id));
+  }
+
+  function closePhotoModal() {
+    setPhotoModalOpen(false);
+    setPhotoTasks([]);
+    setPhotoError(null);
+  }
+
+  function confirmPhotoImport() {
+    const selected = photoTasks.filter((t) => t.checked && t.text.trim());
+    if (selected.length === 0) {
+      closePhotoModal();
+      return;
+    }
+    const now = new Date().toISOString();
+    const newTodos = selected.map((t) => ({
+      id: uid(),
+      text: t.text.trim(),
+      description: null,
+      category: photoImportCategory || null,
+      subcategory: photoImportSubcategory || null,
+      stars: photoImportStars,
+      dueAt: null,
+      done: false,
+      createdAt: now,
+    }));
+    setTodos((prev) => [...newTodos, ...prev]);
+    closePhotoModal();
+  }
+
   function moveCategory(id, direction) {
     setCategories((prev) => {
       const index = prev.findIndex((c) => c.id === id);
@@ -811,6 +929,22 @@ function MeusToDos() {
           >
             <Calendar size={19} />
           </button>
+          <button
+            onClick={openPhotoCapture}
+            title="Importar tarefas de uma foto"
+            className="icon-btn"
+            style={{ ...styles.iconBtn, background: colors.panel, color: colors.textSecondary }}
+          >
+            <Camera size={19} />
+          </button>
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            style={{ display: "none" }}
+            onChange={handlePhotoSelected}
+          />
           <div style={{ ...styles.iconBtn, background: colors.panel, padding: "0 8px", width: "auto" }}>
             <StarPicker value={draftStars} onChange={setDraftStars} size={18} />
           </div>
@@ -1398,6 +1532,130 @@ function MeusToDos() {
                 Concluído
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {photoModalOpen && (
+        <div style={styles.modalBackdrop} onClick={closePhotoModal}>
+          <div className="modal" style={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalHeader}>
+              <span style={styles.modalEyebrow}>IMPORTAR DA FOTO</span>
+              <button onClick={closePhotoModal} style={styles.smallBtnGhost}>
+                <X size={14} />
+              </button>
+            </div>
+
+            {photoProcessing && (
+              <span style={{ ...styles.rowDesc, padding: "12px 0" }}>
+                Analisando a foto, um momento…
+              </span>
+            )}
+
+            {!photoProcessing && photoError && (
+              <div style={styles.voiceWarning}>
+                <AlertCircle size={13} />
+                <span>{photoError}</span>
+              </div>
+            )}
+
+            {!photoProcessing && photoTasks.length > 0 && (
+              <>
+                <span style={{ ...styles.fieldLabel, marginTop: 0 }}>
+                  ITENS ENCONTRADOS — desmarque o que não for tarefa
+                </span>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {photoTasks.map((t) => (
+                    <div key={t.id} style={styles.manageCatRow}>
+                      <button
+                        onClick={() => togglePhotoTask(t.id)}
+                        style={{
+                          ...styles.checkbox,
+                          borderColor: t.checked ? colors.accent : colors.border,
+                          background: t.checked ? colors.accent : "transparent",
+                        }}
+                      >
+                        {t.checked && <Check size={12} color={colors.base} strokeWidth={3} />}
+                      </button>
+                      <input
+                        style={{ ...styles.input, flex: 1 }}
+                        value={t.text}
+                        onChange={(e) => updatePhotoTaskText(t.id, e.target.value)}
+                      />
+                      <button onClick={() => removePhotoTask(t.id)} style={styles.smallBtnGhost}>
+                        <X size={13} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <label style={styles.fieldLabel}>Categoria (aplicada a todos)</label>
+                <div style={styles.catPicker}>
+                  {categories.map((c) => (
+                    <button
+                      key={c.id}
+                      className="cat-btn"
+                      onClick={() => {
+                        setPhotoImportCategory(c.id);
+                        setPhotoImportSubcategory("");
+                      }}
+                      style={{
+                        ...styles.catChip,
+                        borderColor: photoImportCategory === c.id ? c.color : colors.border,
+                        color: photoImportCategory === c.id ? c.color : colors.textSecondary,
+                        background: photoImportCategory === c.id ? c.color + "1A" : "transparent",
+                      }}
+                    >
+                      {c.name}
+                    </button>
+                  ))}
+                </div>
+
+                {catMap[photoImportCategory] && (catMap[photoImportCategory].subcategories || []).length > 0 && (
+                  <div style={styles.subPicker}>
+                    {catMap[photoImportCategory].subcategories.map((s) => (
+                      <button
+                        key={s.id}
+                        className="cat-btn"
+                        onClick={() =>
+                          setPhotoImportSubcategory((prev) => (prev === s.id ? "" : s.id))
+                        }
+                        style={{
+                          ...styles.subChip,
+                          borderColor: photoImportSubcategory === s.id ? catMap[photoImportCategory].color : colors.border,
+                          color: photoImportSubcategory === s.id ? catMap[photoImportCategory].color : colors.textFaint,
+                          background: photoImportSubcategory === s.id ? catMap[photoImportCategory].color + "1A" : "transparent",
+                        }}
+                      >
+                        {s.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <label style={styles.fieldLabel}>Importância (aplicada a todos)</label>
+                <StarPicker value={photoImportStars} onChange={setPhotoImportStars} size={18} />
+
+                <div style={styles.modalActions}>
+                  <button onClick={closePhotoModal} style={styles.smallBtnGhost}>
+                    Cancelar
+                  </button>
+                  <div style={{ flex: 1 }} />
+                  <button onClick={confirmPhotoImport} style={styles.smallBtn}>
+                    Importar {photoTasks.filter((t) => t.checked).length} itens
+                  </button>
+                </div>
+              </>
+            )}
+
+            {!photoProcessing && photoTasks.length === 0 && (
+              <div style={styles.modalActions}>
+                <div style={{ flex: 1 }} />
+                <button onClick={closePhotoModal} style={styles.smallBtnGhost}>
+                  Fechar
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
