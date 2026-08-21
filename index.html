@@ -677,8 +677,10 @@ function MeusToDos() {
       });
       const data = await res.json();
       if (!res.ok || data.error) {
+        const detail =
+          data.detail?.error?.message || data.raw || data.error || `status ${res.status}`;
         setPhotoError(
-          "Não consegui ler a foto agora. Tente novamente com mais luz ou mais perto do texto."
+          "Não consegui ler a foto agora. Detalhe técnico: " + detail
         );
       } else {
         const tasks = (data.tasks || []).map((t) => ({
