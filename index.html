@@ -356,9 +356,11 @@ function MeusToDos() {
   const [editStars, setEditStars] = useState(2);
   const [editDue, setEditDue] = useState("");
 
-  const [listening, setListening] = useState(false);
-  const [voiceSupported, setVoiceSupported] = useState(true);
-  const recognitionRef = useRef(null);
+  const [listening, setListening] = useState(false); // gravando áudio
+  const [transcribing, setTranscribing] = useState(false);
+  const [voiceError, setVoiceError] = useState(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
 
   const [addingCategory, setAddingCategory] = useState(false);
   const [newCatName, setNewCatName] = useState("");
@@ -470,38 +472,88 @@ function MeusToDos() {
     }
   }
 
-  // Voice setup
-  useEffect(() => {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) {
-      setVoiceSupported(false);
+  function pickAudioMimeType() {
+    const candidates = [
+      "audio/webm;codecs=opus",
+      "audio/webm",
+      "audio/mp4",
+      "audio/mpeg",
+    ];
+    for (const t of candidates) {
+      if (window.MediaRecorder && MediaRecorder.isTypeSupported(t)) return t;
+    }
+    return ""; // deixa o navegador escolher o padrão
+  }
+
+  function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve((reader.result || "").split(",")[1] || "");
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  async function startListening() {
+    setVoiceError(null);
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setVoiceError("Este navegador não permite gravar áudio.");
       return;
     }
-    const rec = new SR();
-    rec.lang = "pt-BR";
-    rec.interimResults = false;
-    rec.maxAlternatives = 1;
-    rec.onresult = (ev) => {
-      const transcript = ev.results[0][0].transcript;
-      setDraftText((prev) => (prev ? prev + " " + transcript : transcript));
-    };
-    rec.onerror = () => setListening(false);
-    rec.onend = () => setListening(false);
-    recognitionRef.current = rec;
-  }, []);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = pickAudioMimeType();
+      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      audioChunksRef.current = [];
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((track) => track.stop());
+        const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType || "audio/webm" });
+        setTranscribing(true);
+        try {
+          const base64 = await blobToBase64(blob);
+          const res = await fetch(VISION_WORKER_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ audio: base64 }),
+          });
+          const data = await res.json();
+          if (!res.ok || data.error) {
+            setVoiceError(
+              "Não consegui transcrever o áudio. " + (data.error || data.detail?.message || "")
+            );
+          } else if (data.text) {
+            setDraftText((prev) => (prev ? prev + " " + data.text.trim() : data.text.trim()));
+          }
+        } catch (err) {
+          setVoiceError("Falha de conexão ao transcrever. Verifique a internet.");
+        } finally {
+          setTranscribing(false);
+        }
+      };
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setListening(true);
+    } catch (err) {
+      setVoiceError("Não foi possível acessar o microfone. Verifique a permissão do navegador.");
+      setListening(false);
+    }
+  }
+
+  function stopListening() {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+    }
+    setListening(false);
+  }
 
   function toggleListening() {
-    if (!voiceSupported || !recognitionRef.current) return;
     if (listening) {
-      recognitionRef.current.stop();
-      setListening(false);
+      stopListening();
     } else {
-      try {
-        recognitionRef.current.start();
-        setListening(true);
-      } catch (e) {
-        setListening(false);
-      }
+      startListening();
     }
   }
 
@@ -1002,20 +1054,20 @@ function MeusToDos() {
             onChange={(e) => setDraftText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addTodo()}
           />
-          {voiceSupported && (
-            <button
-              onClick={toggleListening}
-              title="Ditar por voz"
-              className={listening ? "icon-btn mic-pulse" : "icon-btn"}
-              style={{
-                ...styles.iconBtn,
-                background: listening ? colors.accent : colors.panel,
-                color: listening ? colors.base : colors.textSecondary,
-              }}
-            >
-              <Mic size={19} />
-            </button>
-          )}
+          <button
+            onClick={toggleListening}
+            title={transcribing ? "Transcrevendo…" : "Ditar por voz"}
+            disabled={transcribing}
+            className={listening ? "icon-btn mic-pulse" : "icon-btn"}
+            style={{
+              ...styles.iconBtn,
+              background: listening ? colors.accent : colors.panel,
+              color: listening ? colors.base : colors.textSecondary,
+              opacity: transcribing ? 0.5 : 1,
+            }}
+          >
+            <Mic size={19} />
+          </button>
           <button
             onClick={() => setShowDescField((s) => !s)}
             title="Adicionar descrição"
@@ -1207,10 +1259,16 @@ function MeusToDos() {
           </div>
         )}
 
-        {!voiceSupported && (
+        {transcribing && (
+          <div style={styles.voiceWarning}>
+            <span>Transcrevendo áudio…</span>
+          </div>
+        )}
+
+        {voiceError && (
           <div style={styles.voiceWarning}>
             <AlertCircle size={12} />
-            <span>Ditado por voz não é suportado neste navegador.</span>
+            <span>{voiceError}</span>
           </div>
         )}
       </div>
