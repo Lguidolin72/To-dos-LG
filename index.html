@@ -346,10 +346,7 @@ function MeusToDos() {
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
   const [photoProcessing, setPhotoProcessing] = useState(false);
   const [photoError, setPhotoError] = useState(null);
-  const [photoTasks, setPhotoTasks] = useState([]); // [{ id, text, checked }]
-  const [photoImportCategory, setPhotoImportCategory] = useState("");
-  const [photoImportSubcategory, setPhotoImportSubcategory] = useState("");
-  const [photoImportStars, setPhotoImportStars] = useState(2);
+  const [photoTasks, setPhotoTasks] = useState([]); // [{ id, text, checked, category, subcategory, stars }]
 
   // Load
   async function loadData() {
@@ -687,9 +684,6 @@ function MeusToDos() {
     setPhotoProcessing(true);
     setPhotoError(null);
     setPhotoTasks([]);
-    setPhotoImportCategory(categories[0]?.id || "");
-    setPhotoImportSubcategory("");
-    setPhotoImportStars(2);
 
     try {
       const base64 = await fileToBase64(file);
@@ -707,10 +701,14 @@ function MeusToDos() {
           "Não consegui ler a foto agora. Detalhe técnico: " + detail + suffix
         );
       } else {
+        const defaultCat = categories[0]?.id || "";
         const tasks = (data.tasks || []).map((t) => ({
           id: uid(),
           text: t,
           checked: true,
+          category: defaultCat,
+          subcategory: "",
+          stars: 2,
         }));
         if (tasks.length === 0) {
           setPhotoError("Não encontrei nenhuma tarefa nessa foto.");
@@ -734,6 +732,22 @@ function MeusToDos() {
     setPhotoTasks((prev) => prev.map((t) => (t.id === id ? { ...t, text } : t)));
   }
 
+  function updatePhotoTaskCategory(id, categoryId) {
+    setPhotoTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, category: categoryId, subcategory: "" } : t))
+    );
+  }
+
+  function updatePhotoTaskSubcategory(id, subId) {
+    setPhotoTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, subcategory: t.subcategory === subId ? "" : subId } : t))
+    );
+  }
+
+  function updatePhotoTaskStars(id, stars) {
+    setPhotoTasks((prev) => prev.map((t) => (t.id === id ? { ...t, stars } : t)));
+  }
+
   function removePhotoTask(id) {
     setPhotoTasks((prev) => prev.filter((t) => t.id !== id));
   }
@@ -755,9 +769,9 @@ function MeusToDos() {
       id: uid(),
       text: t.text.trim(),
       description: null,
-      category: photoImportCategory || null,
-      subcategory: photoImportSubcategory || null,
-      stars: photoImportStars,
+      category: t.category || null,
+      subcategory: t.subcategory || null,
+      stars: t.stars || 2,
       dueAt: null,
       done: false,
       createdAt: now,
@@ -1588,79 +1602,84 @@ function MeusToDos() {
             {!photoProcessing && photoTasks.length > 0 && (
               <>
                 <span style={{ ...styles.fieldLabel, marginTop: 0 }}>
-                  ITENS ENCONTRADOS — desmarque o que não for tarefa
+                  ITENS ENCONTRADOS — ajuste categoria e importância de cada um
                 </span>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {photoTasks.map((t) => (
-                    <div key={t.id} style={styles.manageCatRow}>
-                      <button
-                        onClick={() => togglePhotoTask(t.id)}
-                        style={{
-                          ...styles.checkbox,
-                          borderColor: t.checked ? colors.accent : colors.border,
-                          background: t.checked ? colors.accent : "transparent",
-                        }}
-                      >
-                        {t.checked && <Check size={12} color={colors.base} strokeWidth={3} />}
-                      </button>
-                      <input
-                        style={{ ...styles.input, flex: 1 }}
-                        value={t.text}
-                        onChange={(e) => updatePhotoTaskText(t.id, e.target.value)}
-                      />
-                      <button onClick={() => removePhotoTask(t.id)} style={styles.smallBtnGhost}>
-                        <X size={13} />
-                      </button>
-                    </div>
-                  ))}
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  {photoTasks.map((t) => {
+                    const cat = catMap[t.category];
+                    return (
+                      <div key={t.id} style={styles.photoTaskCard}>
+                        <div style={styles.manageCatRow}>
+                          <button
+                            onClick={() => togglePhotoTask(t.id)}
+                            style={{
+                              ...styles.checkbox,
+                              borderColor: t.checked ? colors.accent : colors.border,
+                              background: t.checked ? colors.accent : "transparent",
+                            }}
+                          >
+                            {t.checked && <Check size={12} color={colors.base} strokeWidth={3} />}
+                          </button>
+                          <input
+                            style={{ ...styles.input, flex: 1 }}
+                            value={t.text}
+                            onChange={(e) => updatePhotoTaskText(t.id, e.target.value)}
+                          />
+                          <button onClick={() => removePhotoTask(t.id)} style={styles.smallBtnGhost}>
+                            <X size={13} />
+                          </button>
+                        </div>
+
+                        <div style={styles.catPicker}>
+                          {categories.map((c) => (
+                            <button
+                              key={c.id}
+                              className="cat-btn"
+                              onClick={() => updatePhotoTaskCategory(t.id, c.id)}
+                              style={{
+                                ...styles.catChip,
+                                fontSize: 12.5,
+                                padding: "4px 10px",
+                                borderColor: t.category === c.id ? c.color : colors.border,
+                                color: t.category === c.id ? c.color : colors.textSecondary,
+                                background: t.category === c.id ? c.color + "1A" : "transparent",
+                              }}
+                            >
+                              {c.name}
+                            </button>
+                          ))}
+                        </div>
+
+                        {cat && (cat.subcategories || []).length > 0 && (
+                          <div style={styles.subPicker}>
+                            {cat.subcategories.map((s) => (
+                              <button
+                                key={s.id}
+                                className="cat-btn"
+                                onClick={() => updatePhotoTaskSubcategory(t.id, s.id)}
+                                style={{
+                                  ...styles.subChip,
+                                  fontSize: 12,
+                                  borderColor: t.subcategory === s.id ? cat.color : colors.border,
+                                  color: t.subcategory === s.id ? cat.color : colors.textFaint,
+                                  background: t.subcategory === s.id ? cat.color + "1A" : "transparent",
+                                }}
+                              >
+                                {s.name}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+
+                        <StarPicker
+                          value={t.stars}
+                          onChange={(n) => updatePhotoTaskStars(t.id, n)}
+                          size={15}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
-
-                <label style={styles.fieldLabel}>Categoria (aplicada a todos)</label>
-                <div style={styles.catPicker}>
-                  {categories.map((c) => (
-                    <button
-                      key={c.id}
-                      className="cat-btn"
-                      onClick={() => {
-                        setPhotoImportCategory(c.id);
-                        setPhotoImportSubcategory("");
-                      }}
-                      style={{
-                        ...styles.catChip,
-                        borderColor: photoImportCategory === c.id ? c.color : colors.border,
-                        color: photoImportCategory === c.id ? c.color : colors.textSecondary,
-                        background: photoImportCategory === c.id ? c.color + "1A" : "transparent",
-                      }}
-                    >
-                      {c.name}
-                    </button>
-                  ))}
-                </div>
-
-                {catMap[photoImportCategory] && (catMap[photoImportCategory].subcategories || []).length > 0 && (
-                  <div style={styles.subPicker}>
-                    {catMap[photoImportCategory].subcategories.map((s) => (
-                      <button
-                        key={s.id}
-                        className="cat-btn"
-                        onClick={() =>
-                          setPhotoImportSubcategory((prev) => (prev === s.id ? "" : s.id))
-                        }
-                        style={{
-                          ...styles.subChip,
-                          borderColor: photoImportSubcategory === s.id ? catMap[photoImportCategory].color : colors.border,
-                          color: photoImportSubcategory === s.id ? catMap[photoImportCategory].color : colors.textFaint,
-                          background: photoImportSubcategory === s.id ? catMap[photoImportCategory].color + "1A" : "transparent",
-                        }}
-                      >
-                        {s.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                <label style={styles.fieldLabel}>Importância (aplicada a todos)</label>
-                <StarPicker value={photoImportStars} onChange={setPhotoImportStars} size={18} />
 
                 <div style={styles.modalActions}>
                   <button onClick={closePhotoModal} style={styles.smallBtnGhost}>
@@ -2114,6 +2133,13 @@ const styles = {
     borderLeft: `1px dashed ${colors.border}`,
   },
   manageSubRow: { display: "flex", gap: 6, alignItems: "center" },
+  photoTaskCard: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 8,
+    padding: "10px 0",
+    borderBottom: `1px solid ${colors.border}`,
+  },
 };
 
   const root = ReactDOM.createRoot(document.getElementById("root"));
