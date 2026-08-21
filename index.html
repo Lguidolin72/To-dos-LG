@@ -205,6 +205,12 @@
       <circle cx="12" cy="13" r="3" />
     </Icon>
   );
+  const Search = (p) => (
+    <Icon {...p}>
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </Icon>
+  );
 
 
 const PALETTE = [
@@ -255,6 +261,27 @@ function isOverdue(iso, done) {
   if (!iso || done) return false;
   return new Date(iso).getTime() < Date.now();
 }
+
+function dueBucket(t) {
+  if (t.done) return "done";
+  if (!t.dueAt) return "none";
+  const due = new Date(t.dueAt);
+  const now = new Date();
+  const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const diffDays = Math.round((startOfDay(due) - startOfDay(now)) / 86400000);
+  if (diffDays <= 0) return "today"; // inclui atrasados
+  if (diffDays === 1) return "tomorrow";
+  return "week"; // resto dos itens com prazo
+}
+
+const BUCKET_ORDER = ["today", "tomorrow", "week", "none", "done"];
+const BUCKET_LABELS = {
+  today: "Hoje",
+  tomorrow: "Amanhã",
+  week: "Esta semana",
+  none: "Sem prazo",
+  done: "Concluídos",
+};
 
 function StarPicker({ value, onChange, size = 16 }) {
   return (
@@ -341,6 +368,8 @@ function MeusToDos() {
   const [newSubName, setNewSubName] = useState("");
 
   const [manageOpen, setManageOpen] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const photoInputRef = useRef(null);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
@@ -543,6 +572,22 @@ function MeusToDos() {
 
   function removeTodo(id) {
     setTodos((prev) => prev.filter((t) => t.id !== id));
+  }
+
+  function requestDeleteTodo(id) {
+    setConfirmDeleteId(id);
+  }
+
+  function confirmDeleteNow() {
+    if (confirmDeleteId) {
+      removeTodo(confirmDeleteId);
+      if (editingId === confirmDeleteId) setEditingId(null);
+    }
+    setConfirmDeleteId(null);
+  }
+
+  function cancelDelete() {
+    setConfirmDeleteId(null);
   }
 
   function addCategory() {
@@ -831,6 +876,14 @@ function MeusToDos() {
     if (starFilters.length > 0) {
       list = list.filter((t) => starFilters.includes(t.stars || 2));
     }
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      list = list.filter(
+        (t) =>
+          t.text.toLowerCase().includes(q) ||
+          (t.description && t.description.toLowerCase().includes(q))
+      );
+    }
     return [...list].sort((a, b) => {
       if (a.done !== b.done) return a.done ? 1 : -1;
       if (a.dueAt && b.dueAt) return new Date(a.dueAt) - new Date(b.dueAt);
@@ -838,10 +891,28 @@ function MeusToDos() {
       if (b.dueAt) return 1;
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
-  }, [todos, activeFilter, activeSubFilter, starFilters]);
+  }, [todos, activeFilter, activeSubFilter, starFilters, searchQuery]);
 
   const openCount = todos.filter((t) => !t.done).length;
   const overdueCount = todos.filter((t) => isOverdue(t.dueAt, t.done)).length;
+
+  const groupedSections = useMemo(() => {
+    const groups = { today: [], tomorrow: [], week: [], none: [], done: [] };
+    filtered.forEach((t) => {
+      groups[dueBucket(t)].push(t);
+    });
+    Object.keys(groups).forEach((key) => {
+      groups[key].sort((a, b) => {
+        if (a.dueAt && b.dueAt) return new Date(a.dueAt) - new Date(b.dueAt);
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    });
+    return BUCKET_ORDER.map((key) => ({ key, label: BUCKET_LABELS[key], items: groups[key] })).filter(
+      (g) => g.items.length > 0
+    );
+  }, [filtered]);
+
+  let rowCounter = 0;
 
   if (!loaded) {
     return (
@@ -1144,6 +1215,22 @@ function MeusToDos() {
         )}
       </div>
 
+      {/* Search */}
+      <div style={styles.searchBar}>
+        <Search size={15} color={colors.textFaint} />
+        <input
+          style={styles.searchInput}
+          placeholder="Buscar tarefas…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {searchQuery && (
+          <button onClick={() => setSearchQuery("")} style={styles.smallBtnGhost}>
+            <X size={13} />
+          </button>
+        )}
+      </div>
+
       {/* Filters */}
       <div className="filter-bar" style={styles.filterBar}>
         <button
@@ -1242,78 +1329,88 @@ function MeusToDos() {
             <span style={styles.emptySub}>A pauta está limpa — ou é hora de adicionar algo.</span>
           </div>
         )}
-        {filtered.map((t, i) => {
-          const cat = catMap[t.category];
-          const overdue = isOverdue(t.dueAt, t.done);
-          return (
-            <div
-              key={t.id}
-              className="todo-row row-enter row"
-              style={styles.row}
-              onClick={() => openEdit(t)}
-            >
-              <span style={styles.rowIndex}>{pad3(i + 1)}</span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleDone(t.id);
-                }}
-                style={{
-                  ...styles.checkbox,
-                  borderColor: t.done ? colors.accent : colors.border,
-                  background: t.done ? colors.accent : "transparent",
-                }}
-              >
-                {t.done && <Check size={12} color={colors.base} strokeWidth={3} />}
-              </button>
-              <div style={styles.rowBody}>
-                <div style={styles.rowTitleLine}>
-                  <span className={t.done ? "strike row-text" : "row-text"} style={styles.rowText}>
-                    {t.text}
-                  </span>
-                  <StarDisplay value={t.stars || 2} size={11} />
-                </div>
-                {t.description && (
-                  <span className={t.done ? "strike" : ""} style={styles.rowDesc}>
-                    {t.description}
-                  </span>
-                )}
-                <div style={styles.rowMeta}>
-                  {cat && (
-                    <span style={{ ...styles.tag, borderColor: cat.color, color: cat.color }}>
-                      {cat.name}
-                    </span>
-                  )}
-                  {cat && t.subcategory && (
-                    <span style={{ ...styles.tag, borderColor: colors.border, color: colors.textSecondary }}>
-                      {(cat.subcategories || []).find((s) => s.id === t.subcategory)?.name || ""}
-                    </span>
-                  )}
-                  {t.dueAt && (
-                    <span
-                      style={{
-                        ...styles.dueTag,
-                        color: overdue ? colors.overdue : colors.textSecondary,
-                      }}
-                    >
-                      <Calendar size={11} />
-                      {formatDue(t.dueAt)}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeTodo(t.id);
-                }}
-                style={styles.deleteBtn}
-              >
-                <Trash2 size={14} />
-              </button>
+        {groupedSections.map((group) => (
+          <div key={group.key}>
+            <div style={styles.sectionHeader}>
+              <span style={styles.sectionLabel}>{group.label}</span>
+              <span style={styles.sectionCount}>{group.items.length}</span>
             </div>
-          );
-        })}
+            {group.items.map((t) => {
+              rowCounter += 1;
+              const idx = rowCounter;
+              const cat = catMap[t.category];
+              const overdue = isOverdue(t.dueAt, t.done);
+              return (
+                <div
+                  key={t.id}
+                  className="todo-row row-enter row"
+                  style={styles.row}
+                  onClick={() => openEdit(t)}
+                >
+                  <span style={styles.rowIndex}>{pad3(idx)}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleDone(t.id);
+                    }}
+                    style={{
+                      ...styles.checkbox,
+                      borderColor: t.done ? colors.accent : colors.border,
+                      background: t.done ? colors.accent : "transparent",
+                    }}
+                  >
+                    {t.done && <Check size={12} color={colors.base} strokeWidth={3} />}
+                  </button>
+                  <div style={styles.rowBody}>
+                    <div style={styles.rowTitleLine}>
+                      <span className={t.done ? "strike row-text" : "row-text"} style={styles.rowText}>
+                        {t.text}
+                      </span>
+                      <StarDisplay value={t.stars || 2} size={11} />
+                    </div>
+                    {t.description && (
+                      <span className={t.done ? "strike" : ""} style={styles.rowDesc}>
+                        {t.description}
+                      </span>
+                    )}
+                    <div style={styles.rowMeta}>
+                      {cat && (
+                        <span style={{ ...styles.tag, borderColor: cat.color, color: cat.color }}>
+                          {cat.name}
+                        </span>
+                      )}
+                      {cat && t.subcategory && (
+                        <span style={{ ...styles.tag, borderColor: colors.border, color: colors.textSecondary }}>
+                          {(cat.subcategories || []).find((s) => s.id === t.subcategory)?.name || ""}
+                        </span>
+                      )}
+                      {t.dueAt && (
+                        <span
+                          style={{
+                            ...styles.dueTag,
+                            color: overdue ? colors.overdue : colors.textSecondary,
+                          }}
+                        >
+                          <Calendar size={11} />
+                          {formatDue(t.dueAt)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      requestDeleteTodo(t.id);
+                    }}
+                    style={styles.deleteBtn}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
       {error && (
@@ -1436,10 +1533,7 @@ function MeusToDos() {
 
             <div style={styles.modalActions}>
               <button
-                onClick={() => {
-                  removeTodo(editingId);
-                  setEditingId(null);
-                }}
+                onClick={() => requestDeleteTodo(editingId)}
                 style={styles.modalDeleteBtn}
               >
                 <Trash2 size={14} />
@@ -1570,6 +1664,35 @@ function MeusToDos() {
               <div style={{ flex: 1 }} />
               <button onClick={() => setManageOpen(false)} style={styles.smallBtn}>
                 Concluído
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmDeleteId && (
+        <div style={styles.modalBackdrop} onClick={cancelDelete}>
+          <div className="modal" style={{ ...styles.modal, maxWidth: 340 }} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalHeader}>
+              <span style={styles.modalEyebrow}>EXCLUIR TAREFA</span>
+              <button onClick={cancelDelete} style={styles.smallBtnGhost}>
+                <X size={14} />
+              </button>
+            </div>
+            <span style={styles.rowDesc}>
+              {todos.find((t) => t.id === confirmDeleteId)?.text || "Este item"} será excluído
+              permanentemente. Essa ação não pode ser desfeita.
+            </span>
+            <div style={styles.modalActions}>
+              <button onClick={cancelDelete} style={styles.smallBtnGhost}>
+                Cancelar
+              </button>
+              <div style={{ flex: 1 }} />
+              <button
+                onClick={confirmDeleteNow}
+                style={{ ...styles.smallBtn, background: colors.overdue }}
+              >
+                Excluir
               </button>
             </div>
           </div>
@@ -1899,6 +2022,24 @@ const styles = {
     alignItems: "center",
     borderBottom: `1px solid ${colors.border}`,
   },
+  searchBar: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    background: colors.panel,
+    border: `1px solid ${colors.border}`,
+    borderRadius: 8,
+    padding: "8px 12px",
+  },
+  searchInput: {
+    flex: 1,
+    background: "transparent",
+    border: "none",
+    outline: "none",
+    color: colors.text,
+    fontFamily: fonts.body,
+    fontSize: 14.5,
+  },
   filterChip: {
     fontFamily: fonts.mono,
     fontWeight: 600,
@@ -1943,6 +2084,25 @@ const styles = {
   },
 
   list: { display: "flex", flexDirection: "column" },
+  sectionHeader: {
+    display: "flex",
+    alignItems: "baseline",
+    gap: 8,
+    padding: "14px 2px 6px",
+  },
+  sectionLabel: {
+    fontFamily: fonts.mono,
+    fontSize: 12,
+    fontWeight: 600,
+    letterSpacing: "0.08em",
+    color: colors.accent,
+    textTransform: "uppercase",
+  },
+  sectionCount: {
+    fontFamily: fonts.mono,
+    fontSize: 11,
+    color: colors.textFaint,
+  },
   row: {
     display: "flex",
     alignItems: "flex-start",
