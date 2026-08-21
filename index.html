@@ -643,12 +643,35 @@ function MeusToDos() {
   }
 
   function fileToBase64(file) {
+    // Redimensiona/comprime a foto no navegador antes de enviar — reduz bastante
+    // o tamanho do payload (fotos de celular podem ter vários MB) e evita erros
+    // de conexão com a API por causa do tamanho.
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
-        const result = reader.result || "";
-        const base64 = result.split(",")[1] || "";
-        resolve(base64);
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 1568;
+          let { width, height } = img;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+          resolve(dataUrl.split(",")[1] || "");
+        };
+        img.onerror = reject;
+        img.src = reader.result;
       };
       reader.onerror = reject;
       reader.readAsDataURL(file);
@@ -673,14 +696,15 @@ function MeusToDos() {
       const res = await fetch(VISION_WORKER_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: base64, mediaType: file.type || "image/jpeg" }),
+        body: JSON.stringify({ image: base64, mediaType: "image/jpeg" }),
       });
       const data = await res.json();
       if (!res.ok || data.error) {
         const detail =
           data.detail?.error?.message || data.raw || data.error || `status ${res.status}`;
+        const suffix = data.keySuffix ? ` [...${data.keySuffix}]` : "";
         setPhotoError(
-          "Não consegui ler a foto agora. Detalhe técnico: " + detail
+          "Não consegui ler a foto agora. Detalhe técnico: " + detail + suffix
         );
       } else {
         const tasks = (data.tasks || []).map((t) => ({
