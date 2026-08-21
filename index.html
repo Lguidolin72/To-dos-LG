@@ -211,6 +211,24 @@
       <line x1="21" y1="21" x2="16.65" y2="16.65" />
     </Icon>
   );
+  const Sun = (p) => (
+    <Icon {...p}>
+      <circle cx="12" cy="12" r="4" />
+      <line x1="12" y1="2" x2="12" y2="4" />
+      <line x1="12" y1="20" x2="12" y2="22" />
+      <line x1="4.93" y1="4.93" x2="6.34" y2="6.34" />
+      <line x1="17.66" y1="17.66" x2="19.07" y2="19.07" />
+      <line x1="2" y1="12" x2="4" y2="12" />
+      <line x1="20" y1="12" x2="22" y2="12" />
+      <line x1="4.93" y1="19.07" x2="6.34" y2="17.66" />
+      <line x1="17.66" y1="6.34" x2="19.07" y2="4.93" />
+    </Icon>
+  );
+  const Moon = (p) => (
+    <Icon {...p}>
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </Icon>
+  );
 
 
 const PALETTE = [
@@ -283,7 +301,7 @@ const BUCKET_LABELS = {
   done: "Concluídos",
 };
 
-function StarPicker({ value, onChange, size = 16 }) {
+function StarPicker({ value, onChange, size = 16, colors }) {
   return (
     <div style={{ display: "flex", gap: 3 }}>
       {[1, 2, 3].map((n) => (
@@ -312,7 +330,7 @@ function StarPicker({ value, onChange, size = 16 }) {
   );
 }
 
-function StarDisplay({ value, size = 12 }) {
+function StarDisplay({ value, size = 12, colors }) {
   return (
     <span style={{ display: "inline-flex", gap: 1 }}>
       {[1, 2, 3].map((n) => (
@@ -331,6 +349,7 @@ function StarDisplay({ value, size = 12 }) {
 function MeusToDos() {
   const [todos, setTodos] = useState([]);
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [theme, setTheme] = useState("dark");
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(null);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -407,6 +426,7 @@ function MeusToDos() {
         setCategories(
           loadedCats.map((c) => ({ ...c, subcategories: c.subcategories || [] }))
         );
+        setTheme(parsed.theme === "light" ? "light" : "dark");
         setError(null);
         setLoadFailed(false);
       } catch (e) {
@@ -453,14 +473,14 @@ function MeusToDos() {
 
   useEffect(() => {
     if (!loaded || loadFailed) return;
-    const payload = { todos, categories };
+    const payload = { todos, categories, theme };
     savePayloadRef.current = payload;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
       persist(payload);
     }, 400);
     return () => clearTimeout(saveTimerRef.current);
-  }, [todos, categories, loaded]);
+  }, [todos, categories, theme, loaded]);
 
   function retrySave() {
     if (loadFailed) {
@@ -914,6 +934,13 @@ function MeusToDos() {
 
   let rowCounter = 0;
 
+  const colors = theme === "light" ? LIGHT_COLORS : DARK_COLORS;
+  const styles = useMemo(() => buildStyles(colors, fonts), [theme]);
+
+  function toggleTheme() {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  }
+
   if (!loaded) {
     return (
       <div style={{ ...styles.root, alignItems: "center", justifyContent: "center" }}>
@@ -939,7 +966,7 @@ function MeusToDos() {
         @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 ${colors.accent}55; } 50% { box-shadow: 0 0 0 8px ${colors.accent}00; } }
         .cat-btn:hover, .filter-btn:hover { filter: brightness(1.15); }
         .todo-row:hover { background: ${colors.panelHover}; }
-        input[type="datetime-local"] { color-scheme: dark; }
+        input[type="datetime-local"] { color-scheme: ${theme}; }
         @media (prefers-reduced-motion: reduce) {
           .row-enter, .mic-pulse { animation: none; }
         }
@@ -970,8 +997,15 @@ function MeusToDos() {
 
       {/* Header */}
       <header className="header-row" style={styles.header}>
-        <div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <h1 className="app-title" style={styles.title}>To-Dos LG</h1>
+          <button
+            onClick={toggleTheme}
+            title={theme === "light" ? "Mudar para escuro" : "Mudar para claro"}
+            style={styles.themeToggleBtn}
+          >
+            {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+          </button>
         </div>
         <div className="header-stats" style={styles.headerStats}>
           <div style={styles.statBlock}>
@@ -1057,7 +1091,7 @@ function MeusToDos() {
             onChange={handlePhotoSelected}
           />
           <div style={{ ...styles.iconBtn, background: colors.panel, padding: "0 8px", width: "auto" }}>
-            <StarPicker value={draftStars} onChange={setDraftStars} size={18} />
+            <StarPicker value={draftStars} onChange={setDraftStars} size={18} colors={colors} />
           </div>
           <button onClick={addTodo} className="add-btn" style={styles.addBtn}>
             <Plus size={19} />
@@ -1315,7 +1349,7 @@ function MeusToDos() {
                 background: active ? colors.accentDim : "transparent",
               }}
             >
-              <StarDisplay value={n} size={14} />
+              <StarDisplay value={n} size={14} colors={colors} />
             </button>
           );
         })}
@@ -1366,7 +1400,7 @@ function MeusToDos() {
                       <span className={t.done ? "strike row-text" : "row-text"} style={styles.rowText}>
                         {t.text}
                       </span>
-                      <StarDisplay value={t.stars || 2} size={11} />
+                      <StarDisplay value={t.stars || 2} size={11} colors={colors} />
                     </div>
                     {t.description && (
                       <span className={t.done ? "strike" : ""} style={styles.rowDesc}>
@@ -1521,7 +1555,7 @@ function MeusToDos() {
             )}
 
             <label style={styles.fieldLabel}>Importância</label>
-            <StarPicker value={editStars} onChange={setEditStars} size={18} />
+            <StarPicker value={editStars} onChange={setEditStars} size={18} colors={colors} />
 
             <label style={styles.fieldLabel}>Prazo</label>
             <input
@@ -1798,6 +1832,7 @@ function MeusToDos() {
                           value={t.stars}
                           onChange={(n) => updatePhotoTaskStars(t.id, n)}
                           size={15}
+                          colors={colors}
                         />
                       </div>
                     );
@@ -1831,7 +1866,7 @@ function MeusToDos() {
   );
 }
 
-const colors = {
+const DARK_COLORS = {
   base: "#14161B",
   panel: "#1C1F26",
   panelHover: "#22252D",
@@ -1844,13 +1879,27 @@ const colors = {
   overdue: "#C9694F",
 };
 
+const LIGHT_COLORS = {
+  base: "#F7F5F0",
+  panel: "#FFFFFF",
+  panelHover: "#F0EDE3",
+  border: "#DCD6C8",
+  text: "#1A1A1A",
+  textSecondary: "#5C5A54",
+  textFaint: "#8A8578",
+  accent: "#A5791E",
+  accentDim: "#A5791E1A",
+  overdue: "#B23A2E",
+};
+
 const fonts = {
   display: "'Newsreader', Georgia, serif",
   body: "'Inter', -apple-system, sans-serif",
   mono: "'IBM Plex Mono', 'SF Mono', monospace",
 };
 
-const styles = {
+function buildStyles(colors, fonts) {
+  return {
   root: {
     display: "flex",
     flexDirection: "column",
@@ -1867,6 +1916,19 @@ const styles = {
     alignItems: "flex-end",
     borderBottom: `1px solid ${colors.border}`,
     paddingBottom: 16,
+  },
+  themeToggleBtn: {
+    background: "transparent",
+    border: `1px solid ${colors.border}`,
+    borderRadius: "50%",
+    width: 30,
+    height: 30,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: colors.textSecondary,
+    cursor: "pointer",
+    flexShrink: 0,
   },
   eyebrow: {
     fontFamily: fonts.mono,
@@ -2301,6 +2363,7 @@ const styles = {
     borderBottom: `1px solid ${colors.border}`,
   },
 };
+}
 
   const root = ReactDOM.createRoot(document.getElementById("root"));
   root.render(<MeusToDos />);
