@@ -302,47 +302,36 @@ const BUCKET_LABELS = {
 };
 
 function StarPicker({ value, onChange, size = 16, colors }) {
+  const isPriority = value === 1;
   return (
-    <div style={{ display: "flex", gap: 3 }}>
-      {[1, 2, 3].map((n) => (
-        <button
-          key={n}
-          type="button"
-          onClick={() => onChange(n)}
-          title={`${n} estrela${n > 1 ? "s" : ""}`}
-          style={{
-            background: "transparent",
-            border: "none",
-            padding: 2,
-            cursor: "pointer",
-            display: "flex",
-          }}
-        >
-          <Star
-            size={size}
-            color={n <= value ? colors.accent : colors.textFaint}
-            fill={n <= value ? colors.accent : "none"}
-            strokeWidth={1.5}
-          />
-        </button>
-      ))}
-    </div>
+    <button
+      type="button"
+      onClick={() => onChange(isPriority ? 0 : 1)}
+      title={isPriority ? "Prioridade — toque para remover" : "Marcar como prioridade"}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        background: "transparent",
+        border: "none",
+        padding: 2,
+        cursor: "pointer",
+      }}
+    >
+      <Star
+        size={size}
+        color={isPriority ? colors.accent : colors.textFaint}
+        fill={isPriority ? colors.accent : "none"}
+        strokeWidth={1.5}
+      />
+    </button>
   );
 }
 
 function StarDisplay({ value, size = 12, colors }) {
+  if (value !== 1) return null;
   return (
-    <span style={{ display: "inline-flex", gap: 1 }}>
-      {[1, 2, 3].map((n) => (
-        <Star
-          key={n}
-          size={size}
-          color={n <= value ? colors.accent : colors.border}
-          fill={n <= value ? colors.accent : "none"}
-          strokeWidth={1.5}
-        />
-      ))}
-    </span>
+    <Star size={size} color={colors.accent} fill={colors.accent} strokeWidth={1.5} />
   );
 }
 
@@ -356,13 +345,13 @@ function MeusToDos() {
 
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeSubFilter, setActiveSubFilter] = useState("all");
-  const [starFilters, setStarFilters] = useState([]); // empty = show all; otherwise array of 1|2|3
+  const [priorityOnly, setPriorityOnly] = useState(false); // filtro: só itens de prioridade
 
   const [draftText, setDraftText] = useState("");
   const [draftDesc, setDraftDesc] = useState("");
   const [draftCategory, setDraftCategory] = useState(DEFAULT_CATEGORIES[0].id);
   const [draftSubcategory, setDraftSubcategory] = useState("");
-  const [draftStars, setDraftStars] = useState(2);
+  const [draftStars, setDraftStars] = useState(0);
   const [draftDue, setDraftDue] = useState("");
   const [showDueField, setShowDueField] = useState(false);
   const [showDescField, setShowDescField] = useState(false);
@@ -372,7 +361,7 @@ function MeusToDos() {
   const [editDesc, setEditDesc] = useState("");
   const [editCategory, setEditCategory] = useState("");
   const [editSubcategory, setEditSubcategory] = useState("");
-  const [editStars, setEditStars] = useState(2);
+  const [editStars, setEditStars] = useState(0);
   const [editDue, setEditDue] = useState("");
 
   const [listening, setListening] = useState(false);
@@ -418,7 +407,14 @@ function MeusToDos() {
     if (res && res.value) {
       try {
         const parsed = JSON.parse(res.value);
-        setTodos(parsed.todos || []);
+        const needsStarMigration = !parsed.schemaVersion || parsed.schemaVersion < 2;
+        const loadedTodos = (parsed.todos || []).map((t) => ({
+          ...t,
+          stars: needsStarMigration
+            ? (t.stars === 3 ? 1 : 0) // esquema antigo (1-3): só "3" vira prioridade
+            : (t.stars === 1 ? 1 : 0), // esquema novo (0/1): mantém como está
+        }));
+        setTodos(loadedTodos);
         const loadedCats =
           parsed.categories && parsed.categories.length
             ? parsed.categories
@@ -473,7 +469,7 @@ function MeusToDos() {
 
   useEffect(() => {
     if (!loaded || loadFailed) return;
-    const payload = { todos, categories, theme };
+    const payload = { todos, categories, theme, schemaVersion: 2 };
     savePayloadRef.current = payload;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
@@ -555,7 +551,7 @@ function MeusToDos() {
     setEditDesc(t.description || "");
     setEditCategory(t.category);
     setEditSubcategory(t.subcategory || "");
-    setEditStars(t.stars || 2);
+    setEditStars(t.stars || 0);
     setEditDue(t.dueAt || "");
   }
 
@@ -773,7 +769,7 @@ function MeusToDos() {
           checked: true,
           category: defaultCat,
           subcategory: "",
-          stars: 2,
+          stars: 0,
         }));
         if (tasks.length === 0) {
           setPhotoError("Não encontrei nenhuma tarefa nessa foto.");
@@ -836,7 +832,7 @@ function MeusToDos() {
       description: null,
       category: t.category || null,
       subcategory: t.subcategory || null,
-      stars: t.stars || 2,
+      stars: t.stars || 0,
       dueAt: null,
       done: false,
       createdAt: now,
@@ -873,12 +869,6 @@ function MeusToDos() {
     }
   }
 
-  function toggleStarFilter(n) {
-    setStarFilters((prev) =>
-      prev.includes(n) ? prev.filter((x) => x !== n) : [...prev, n]
-    );
-  }
-
   const catMap = useMemo(() => {
     const m = {};
     categories.forEach((c) => (m[c.id] = c));
@@ -893,8 +883,8 @@ function MeusToDos() {
         list = list.filter((t) => t.subcategory === activeSubFilter);
       }
     }
-    if (starFilters.length > 0) {
-      list = list.filter((t) => starFilters.includes(t.stars || 2));
+    if (priorityOnly) {
+      list = list.filter((t) => (t.stars || 0) === 1);
     }
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
@@ -911,7 +901,7 @@ function MeusToDos() {
       if (b.dueAt) return 1;
       return new Date(b.createdAt) - new Date(a.createdAt);
     });
-  }, [todos, activeFilter, activeSubFilter, starFilters, searchQuery]);
+  }, [todos, activeFilter, activeSubFilter, priorityOnly, searchQuery]);
 
   const openCount = todos.filter((t) => !t.done).length;
   const overdueCount = todos.filter((t) => isOverdue(t.dueAt, t.done)).length;
@@ -1333,26 +1323,22 @@ function MeusToDos() {
       )}
 
       <div className="filter-bar" style={styles.subFilterBar}>
-        <span style={styles.starFilterLabel}>importância:</span>
-        {[1, 2, 3].map((n) => {
-          const active = starFilters.includes(n);
-          return (
-            <button
-              key={n}
-              className="filter-btn filter-chip"
-              onClick={() => toggleStarFilter(n)}
-              style={{
-                ...styles.subFilterChip,
-                display: "inline-flex",
-                alignItems: "center",
-                borderColor: active ? colors.accent : colors.border,
-                background: active ? colors.accentDim : "transparent",
-              }}
-            >
-              <StarDisplay value={n} size={14} colors={colors} />
-            </button>
-          );
-        })}
+        <button
+          className="filter-btn filter-chip"
+          onClick={() => setPriorityOnly((p) => !p)}
+          style={{
+            ...styles.subFilterChip,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            borderColor: priorityOnly ? colors.accent : colors.border,
+            color: priorityOnly ? colors.accent : colors.textFaint,
+            background: priorityOnly ? colors.accentDim : "transparent",
+          }}
+        >
+          <Star size={13} fill={priorityOnly ? colors.accent : "none"} color={priorityOnly ? colors.accent : colors.textFaint} />
+          Só prioritárias
+        </button>
       </div>
 
       {/* List */}
@@ -1400,7 +1386,7 @@ function MeusToDos() {
                       <span className={t.done ? "strike row-text" : "row-text"} style={styles.rowText}>
                         {t.text}
                       </span>
-                      <StarDisplay value={t.stars || 2} size={11} colors={colors} />
+                      <StarDisplay value={t.stars || 0} size={11} colors={colors} />
                     </div>
                     {t.description && (
                       <span className={t.done ? "strike" : ""} style={styles.rowDesc}>
