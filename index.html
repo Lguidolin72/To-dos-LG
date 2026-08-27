@@ -229,6 +229,13 @@
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </Icon>
   );
+  const Printer = (p) => (
+    <Icon {...p}>
+      <polyline points="6 9 6 2 18 2 18 9" />
+      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+      <rect x="6" y="14" width="12" height="8" />
+    </Icon>
+  );
 
 
 const PALETTE = [
@@ -922,6 +929,40 @@ function MeusToDos() {
     );
   }, [filtered]);
 
+  const priorityReport = useMemo(() => {
+    const groups = {};
+    const noneGroup = [];
+    todos
+      .filter((t) => !t.done && t.stars === 1)
+      .forEach((t) => {
+        if (t.category && catMap[t.category]) {
+          if (!groups[t.category]) groups[t.category] = [];
+          groups[t.category].push(t);
+        } else {
+          noneGroup.push(t);
+        }
+      });
+    const sections = categories
+      .filter((c) => groups[c.id] && groups[c.id].length > 0)
+      .map((c) => ({
+        id: c.id,
+        name: c.name,
+        items: groups[c.id].map((t) => ({
+          text: t.text,
+          subName: (c.subcategories || []).find((s) => s.id === t.subcategory)?.name || null,
+          dueLabel: t.dueAt ? formatDue(t.dueAt) : null,
+        })),
+      }));
+    if (noneGroup.length > 0) {
+      sections.push({
+        id: "none",
+        name: "Sem categoria",
+        items: noneGroup.map((t) => ({ text: t.text, subName: null, dueLabel: t.dueAt ? formatDue(t.dueAt) : null })),
+      });
+    }
+    return sections;
+  }, [todos, categories, catMap]);
+
   let rowCounter = 0;
 
   const colors = theme === "light" ? LIGHT_COLORS : DARK_COLORS;
@@ -983,6 +1024,42 @@ function MeusToDos() {
           .row-text { font-size: 14px !important; }
           .modal { padding: 14px !important; max-width: 100% !important; }
         }
+
+        #print-report { display: none; }
+
+        @media print {
+          body * { visibility: hidden !important; }
+          #print-report, #print-report * { visibility: visible !important; }
+          #print-report {
+            display: block !important;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            color: #000;
+            background: #fff;
+            font-family: Georgia, serif;
+            column-count: 2;
+            column-gap: 26px;
+            padding: 10px 16px;
+          }
+          .print-title { font-size: 16pt; margin: 0 0 2px 0; column-span: all; }
+          .print-date { font-size: 9pt; color: #444; margin-bottom: 10px; column-span: all; text-transform: capitalize; }
+          .print-empty { font-size: 10pt; column-span: all; }
+          .print-category { break-inside: avoid-column; margin-bottom: 10px; }
+          .print-cat-title {
+            font-size: 11pt;
+            font-weight: 700;
+            border-bottom: 1pt solid #000;
+            padding-bottom: 2pt;
+            margin-bottom: 4pt;
+          }
+          .print-item { break-inside: avoid; font-size: 10pt; line-height: 1.35; margin-bottom: 2pt; display: flex; align-items: baseline; gap: 5pt; }
+          .print-checkbox { font-size: 10pt; }
+          .print-item-text { flex: 1; }
+          .print-item-meta { font-size: 8pt; color: #555; white-space: nowrap; }
+          @page { margin: 14mm; }
+        }
       `}</style>
 
       {/* Header */}
@@ -995,6 +1072,13 @@ function MeusToDos() {
             style={styles.themeToggleBtn}
           >
             {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+          </button>
+          <button
+            onClick={() => window.print()}
+            title="Exportar prioridades em PDF"
+            style={styles.themeToggleBtn}
+          >
+            <Printer size={16} />
           </button>
         </div>
         <div className="header-stats" style={styles.headerStats}>
@@ -1717,6 +1801,31 @@ function MeusToDos() {
           </div>
         </div>
       )}
+
+      {/* Relatório de prioridades — só aparece na impressão/PDF */}
+      <div id="print-report">
+        <h1 className="print-title">Prioridades — To-Dos LG</h1>
+        <div className="print-date">{new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}</div>
+        {priorityReport.length === 0 && (
+          <p className="print-empty">Nenhuma tarefa marcada como prioridade no momento.</p>
+        )}
+        {priorityReport.map((section) => (
+          <div className="print-category" key={section.id}>
+            <div className="print-cat-title">{section.name}</div>
+            {section.items.map((item, idx) => (
+              <div className="print-item" key={idx}>
+                <span className="print-checkbox">☐</span>
+                <span className="print-item-text">{item.text}</span>
+                {(item.subName || item.dueLabel) && (
+                  <span className="print-item-meta">
+                    {[item.subName, item.dueLabel].filter(Boolean).join(" · ")}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
 
       {photoModalOpen && (
         <div style={styles.modalBackdrop} onClick={closePhotoModal}>
