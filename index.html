@@ -12,6 +12,8 @@
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+<script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
   html, body { margin: 0; padding: 0; background: #14161B; min-height: 100vh; }
   #root { min-height: 100vh; }
@@ -383,7 +385,9 @@ function MeusToDos() {
   const [newSubName, setNewSubName] = useState("");
 
   const [manageOpen, setManageOpen] = useState(false);
-  const [printWarning, setPrintWarning] = useState(false);
+  const [pdfGenerating, setPdfGenerating] = useState(false);
+  const [pdfError, setPdfError] = useState(null);
+  const pdfSourceRef = useRef(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -973,13 +977,56 @@ function MeusToDos() {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   }
 
-  function handlePrintClick() {
-    const isStandalone = window.navigator.standalone === true;
-    if (isStandalone) {
-      setPrintWarning(true);
+  async function handleExportPdf() {
+    setPdfError(null);
+    if (!window.html2canvas || !(window.jspdf && window.jspdf.jsPDF)) {
+      setPdfError("As bibliotecas de PDF não carregaram. Verifique a internet e tente de novo.");
       return;
     }
-    window.print();
+    if (priorityReport.length === 0) {
+      setPdfError("Nenhuma tarefa marcada como prioridade para exportar.");
+      return;
+    }
+    setPdfGenerating(true);
+    try {
+      const node = pdfSourceRef.current;
+      const canvas = await window.html2canvas(node, {
+        scale: 2,
+        backgroundColor: "#ffffff",
+        windowWidth: 760,
+      });
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ unit: "mm", format: "a4" });
+      const marginMm = 12;
+      const contentWidthMm = 210 - marginMm * 2;
+      const pxPerMm = canvas.width / contentWidthMm;
+      const pageContentHeightMm = 297 - marginMm * 2;
+      const pageHeightPx = pageContentHeightMm * pxPerMm;
+
+      let renderedPx = 0;
+      let pageIndex = 0;
+      while (renderedPx < canvas.height) {
+        const sliceHeightPx = Math.min(pageHeightPx, canvas.height - renderedPx);
+        const sliceCanvas = document.createElement("canvas");
+        sliceCanvas.width = canvas.width;
+        sliceCanvas.height = sliceHeightPx;
+        const ctx = sliceCanvas.getContext("2d");
+        ctx.drawImage(canvas, 0, renderedPx, canvas.width, sliceHeightPx, 0, 0, canvas.width, sliceHeightPx);
+        const imgData = sliceCanvas.toDataURL("image/png");
+        if (pageIndex > 0) pdf.addPage();
+        const sliceHeightMm = sliceHeightPx / pxPerMm;
+        pdf.addImage(imgData, "PNG", marginMm, marginMm, contentWidthMm, sliceHeightMm);
+        renderedPx += sliceHeightPx;
+        pageIndex++;
+      }
+
+      pdf.save("prioridades-to-dos-lg.pdf");
+    } catch (err) {
+      setPdfError("Falha ao gerar o PDF: " + err.message);
+    } finally {
+      setPdfGenerating(false);
+    }
   }
 
   if (!loaded) {
@@ -1034,42 +1081,6 @@ function MeusToDos() {
           .row-text { font-size: 14px !important; }
           .modal { padding: 14px !important; max-width: 100% !important; }
         }
-
-        #print-report { display: none; }
-
-        @media print {
-          body * { visibility: hidden !important; }
-          #print-report, #print-report * { visibility: visible !important; }
-          #print-report {
-            display: block !important;
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            color: #000;
-            background: #fff;
-            font-family: Georgia, serif;
-            column-count: 2;
-            column-gap: 26px;
-            padding: 10px 16px;
-          }
-          .print-title { font-size: 16pt; margin: 0 0 2px 0; column-span: all; }
-          .print-date { font-size: 9pt; color: #444; margin-bottom: 10px; column-span: all; }
-          .print-empty { font-size: 10pt; column-span: all; }
-          .print-category { break-inside: avoid-column; margin-bottom: 10px; }
-          .print-cat-title {
-            font-size: 11pt;
-            font-weight: 700;
-            border-bottom: 1pt solid #000;
-            padding-bottom: 2pt;
-            margin-bottom: 4pt;
-          }
-          .print-item { break-inside: avoid; font-size: 10pt; line-height: 1.35; margin-bottom: 2pt; display: flex; align-items: baseline; gap: 5pt; }
-          .print-checkbox { font-size: 10pt; }
-          .print-item-text { flex: 1; }
-          .print-item-meta { font-size: 8pt; color: #555; white-space: nowrap; }
-          @page { margin: 14mm; }
-        }
       `}</style>
 
       {/* Header */}
@@ -1084,9 +1095,10 @@ function MeusToDos() {
             {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
           </button>
           <button
-            onClick={handlePrintClick}
-            title="Exportar prioridades em PDF"
-            style={styles.themeToggleBtn}
+            onClick={handleExportPdf}
+            disabled={pdfGenerating}
+            title={pdfGenerating ? "Gerando PDF…" : "Exportar prioridades em PDF"}
+            style={{ ...styles.themeToggleBtn, opacity: pdfGenerating ? 0.5 : 1 }}
           >
             <Printer size={16} />
           </button>
@@ -1783,23 +1795,19 @@ function MeusToDos() {
         </div>
       )}
 
-      {printWarning && (
-        <div style={styles.modalBackdrop} onClick={() => setPrintWarning(false)}>
+      {pdfError && (
+        <div style={styles.modalBackdrop} onClick={() => setPdfError(null)}>
           <div className="modal" style={{ ...styles.modal, maxWidth: 340 }} onClick={(e) => e.stopPropagation()}>
             <div style={styles.modalHeader}>
               <span style={styles.modalEyebrow}>EXPORTAR PDF</span>
-              <button onClick={() => setPrintWarning(false)} style={styles.smallBtnGhost}>
+              <button onClick={() => setPdfError(null)} style={styles.smallBtnGhost}>
                 <X size={14} />
               </button>
             </div>
-            <span style={styles.rowDesc}>
-              A impressão/exportação em PDF não funciona de forma confiável quando o app é aberto
-              pelo ícone da Tela de Início — é uma limitação conhecida do iOS. Abra este link direto
-              no Safari (não pelo ícone) para exportar o PDF.
-            </span>
+            <span style={styles.rowDesc}>{pdfError}</span>
             <div style={styles.modalActions}>
               <div style={{ flex: 1 }} />
-              <button onClick={() => setPrintWarning(false)} style={styles.smallBtn}>
+              <button onClick={() => setPdfError(null)} style={styles.smallBtn}>
                 Entendi
               </button>
             </div>
@@ -1836,29 +1844,66 @@ function MeusToDos() {
         </div>
       )}
 
-      {/* Relatório de prioridades — só aparece na impressão/PDF */}
-      <div id="print-report">
-        <h1 className="print-title">Prioridades — To-Dos LG</h1>
-        <div className="print-date">{new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}</div>
+      {/* Fonte para geração do PDF — sempre renderizado fora da tela, nunca visível ao usuário */}
+      <div
+        ref={pdfSourceRef}
+        style={{
+          position: "fixed",
+          left: "-9999px",
+          top: 0,
+          width: 760,
+          background: "#ffffff",
+          color: "#000000",
+          fontFamily: "Georgia, serif",
+          padding: "24px 28px",
+        }}
+      >
+        <h1 style={{ fontSize: 20, margin: "0 0 2px 0" }}>Prioridades — To-Dos LG</h1>
+        <div style={{ fontSize: 11, color: "#444", marginBottom: 16 }}>
+          {new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
+        </div>
         {priorityReport.length === 0 && (
-          <p className="print-empty">Nenhuma tarefa marcada como prioridade no momento.</p>
+          <p style={{ fontSize: 12 }}>Nenhuma tarefa marcada como prioridade no momento.</p>
         )}
-        {priorityReport.map((section) => (
-          <div className="print-category" key={section.id}>
-            <div className="print-cat-title">{section.name}</div>
-            {section.items.map((item, idx) => (
-              <div className="print-item" key={idx}>
-                <span className="print-checkbox">☐</span>
-                <span className="print-item-text">{item.text}</span>
-                {(item.subName || item.dueLabel) && (
-                  <span className="print-item-meta">
-                    {[item.subName, item.dueLabel].filter(Boolean).join(" · ")}
-                  </span>
-                )}
+        <div style={{ columnCount: 2, columnGap: 30 }}>
+          {priorityReport.map((section) => (
+            <div key={section.id} style={{ breakInside: "avoid-column", marginBottom: 12 }}>
+              <div
+                style={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  borderBottom: "1px solid #000",
+                  paddingBottom: 3,
+                  marginBottom: 5,
+                }}
+              >
+                {section.name}
               </div>
-            ))}
-          </div>
-        ))}
+              {section.items.map((item, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    breakInside: "avoid",
+                    fontSize: 11.5,
+                    lineHeight: 1.4,
+                    marginBottom: 3,
+                    display: "flex",
+                    alignItems: "baseline",
+                    gap: 6,
+                  }}
+                >
+                  <span>☐</span>
+                  <span style={{ flex: 1 }}>{item.text}</span>
+                  {(item.subName || item.dueLabel) && (
+                    <span style={{ fontSize: 9, color: "#555", whiteSpace: "nowrap" }}>
+                      {[item.subName, item.dueLabel].filter(Boolean).join(" · ")}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
 
       {photoModalOpen && (
