@@ -938,7 +938,7 @@ function MeusToDos() {
     const groups = {};
     const noneGroup = [];
     todos
-      .filter((t) => !t.done && t.stars === 1)
+      .filter((t) => !t.done)
       .forEach((t) => {
         if (t.category && catMap[t.category]) {
           if (!groups[t.category]) groups[t.category] = [];
@@ -949,20 +949,29 @@ function MeusToDos() {
       });
     const sections = categories
       .filter((c) => groups[c.id] && groups[c.id].length > 0)
-      .map((c) => ({
-        id: c.id,
-        name: c.name,
-        items: groups[c.id].map((t) => ({
-          text: t.text,
-          subName: (c.subcategories || []).find((s) => s.id === t.subcategory)?.name || null,
-          dueLabel: t.dueAt ? formatDue(t.dueAt) : null,
-        })),
-      }));
+      .map((c) => {
+        const items = [...groups[c.id]].sort((a, b) => (b.stars === 1 ? 1 : 0) - (a.stars === 1 ? 1 : 0));
+        return {
+          id: c.id,
+          name: c.name,
+          items: items.map((t) => ({
+            text: t.text,
+            starred: t.stars === 1,
+            subName: (c.subcategories || []).find((s) => s.id === t.subcategory)?.name || null,
+            dueLabel: t.dueAt ? formatDue(t.dueAt) : null,
+          })),
+        };
+      });
     if (noneGroup.length > 0) {
       sections.push({
         id: "none",
         name: "Sem categoria",
-        items: noneGroup.map((t) => ({ text: t.text, subName: null, dueLabel: t.dueAt ? formatDue(t.dueAt) : null })),
+        items: noneGroup.map((t) => ({
+          text: t.text,
+          starred: t.stars === 1,
+          subName: null,
+          dueLabel: t.dueAt ? formatDue(t.dueAt) : null,
+        })),
       });
     }
     return sections;
@@ -984,7 +993,7 @@ function MeusToDos() {
       return;
     }
     if (priorityReport.length === 0) {
-      setPdfError("Nenhuma tarefa marcada como prioridade para exportar.");
+      setPdfError("Nenhuma tarefa em aberto para exportar.");
       return;
     }
     setPdfGenerating(true);
@@ -1021,7 +1030,7 @@ function MeusToDos() {
         pageIndex++;
       }
 
-      pdf.save("prioridades-to-dos-lg.pdf");
+      pdf.save("tarefas-to-dos-lg.pdf");
     } catch (err) {
       setPdfError("Falha ao gerar o PDF: " + err.message);
     } finally {
@@ -1097,7 +1106,7 @@ function MeusToDos() {
           <button
             onClick={handleExportPdf}
             disabled={pdfGenerating}
-            title={pdfGenerating ? "Gerando PDF…" : "Exportar prioridades em PDF"}
+            title={pdfGenerating ? "Gerando PDF…" : "Exportar tarefas em PDF"}
             style={{ ...styles.themeToggleBtn, opacity: pdfGenerating ? 0.5 : 1 }}
           >
             <Printer size={16} />
@@ -1858,12 +1867,13 @@ function MeusToDos() {
           padding: "24px 28px",
         }}
       >
-        <h1 style={{ fontSize: 20, margin: "0 0 2px 0" }}>Prioridades — To-Dos LG</h1>
-        <div style={{ fontSize: 11, color: "#444", marginBottom: 16 }}>
+        <h1 style={{ fontSize: 20, margin: "0 0 2px 0" }}>Tarefas — To-Dos LG</h1>
+        <div style={{ fontSize: 11, color: "#444", marginBottom: 4 }}>
           {new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
         </div>
+        <div style={{ fontSize: 9.5, color: "#777", marginBottom: 16 }}>★ = prioridade</div>
         {priorityReport.length === 0 && (
-          <p style={{ fontSize: 12 }}>Nenhuma tarefa marcada como prioridade no momento.</p>
+          <p style={{ fontSize: 12 }}>Nenhuma tarefa em aberto no momento.</p>
         )}
         <div style={{ columnCount: 2, columnGap: 30 }}>
           {priorityReport.map((section) => (
@@ -1893,7 +1903,10 @@ function MeusToDos() {
                   }}
                 >
                   <span>☐</span>
-                  <span style={{ flex: 1 }}>{item.text}</span>
+                  <span style={{ flex: 1 }}>
+                    {item.starred && <span style={{ color: "#A5791E" }}>★ </span>}
+                    {item.text}
+                  </span>
                   {(item.subName || item.dueLabel) && (
                     <span style={{ fontSize: 9, color: "#555", whiteSpace: "nowrap" }}>
                       {[item.subName, item.dueLabel].filter(Boolean).join(" · ")}
