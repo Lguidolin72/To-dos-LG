@@ -395,7 +395,7 @@ function MeusToDos() {
   const [manageOpen, setManageOpen] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
   const [pdfError, setPdfError] = useState(null);
-  const [notifSettings, setNotifSettings] = useState({ times: [], filter: "priority" });
+  const [notifSettings, setNotifSettings] = useState({ times: [], filter: "priority", categories: [] });
   const [pushSubscriptions, setPushSubscriptions] = useState([]);
   const [notifModalOpen, setNotifModalOpen] = useState(false);
   const [notifError, setNotifError] = useState(null);
@@ -450,8 +450,8 @@ function MeusToDos() {
         setTheme(parsed.theme === "light" ? "light" : "dark");
         setNotifSettings(
           parsed.notifSettings && Array.isArray(parsed.notifSettings.times)
-            ? parsed.notifSettings
-            : { times: [], filter: "priority" }
+            ? { categories: [], ...parsed.notifSettings }
+            : { times: [], filter: "priority", categories: [] }
         );
         setPushSubscriptions(Array.isArray(parsed.pushSubscriptions) ? parsed.pushSubscriptions : []);
         setError(null);
@@ -1076,6 +1076,16 @@ function MeusToDos() {
 
   function setNotifFilter(filter) {
     setNotifSettings((prev) => ({ ...prev, filter }));
+  }
+
+  function toggleNotifCategory(categoryId) {
+    setNotifSettings((prev) => {
+      const current = prev.categories || [];
+      const next = current.includes(categoryId)
+        ? current.filter((id) => id !== categoryId)
+        : [...current, categoryId];
+      return { ...prev, categories: next };
+    });
   }
 
   async function handleExportPdf() {
@@ -1990,6 +2000,27 @@ function MeusToDos() {
               >
                 Vencidas ou de hoje
               </button>
+            </div>
+
+            <label style={styles.fieldLabel}>Categorias incluídas (nenhuma marcada = todas)</label>
+            <div style={styles.catPicker}>
+              {categories.map((c) => {
+                const active = (notifSettings.categories || []).includes(c.id);
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => toggleNotifCategory(c.id)}
+                    style={{
+                      ...styles.catChip,
+                      borderColor: active ? c.color : colors.border,
+                      color: active ? c.color : colors.textSecondary,
+                      background: active ? c.color + "1A" : "transparent",
+                    }}
+                  >
+                    {c.name}
+                  </button>
+                );
+              })}
             </div>
 
             <div style={styles.modalActions}>
