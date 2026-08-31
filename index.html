@@ -6,6 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
+<link rel="manifest" href="manifest.json" />
 <title>To-Do LG</title>
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA1ElEQVR4nO1Xyw2DMAxN3E6BxI2FmIdz5+lC3JDYIoKTJSukrT/BKRLvFCEn7/nZMRADQdcPW3DAuswR1+BNnnOBN3kuIrYgp4DfIX8u4P16tBVghUkAZm9x4boOWGtvFlALKgGl7LWOFAdRLXtzjFM6PCs6UAo8g/yjgNoivp3FehdoS8JJgtWEGje4e9i3QCJCEnudOSDpA0lscweels201tqbonJgnNKh0bRzQzwHOEQYX20O4GHcLCVu3F/FtwCgP4reWJc5Ai5akIdASuApgnLtt0dSAa8eY6UAAAAASUVORK5CYII=" />
 <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAFRklEQVR4nO3dTVLbQBCG4bGTU1DFjgtxHtY5Ty7EjipuQZFFaqhByLLmv+fr9zmAkTSv2w1JyCVM9PD49Dnz66OP97fXy6yvPfQLE7BPIwPv/oWIGKnecXd7cULGkV5hN39RQkaO1mE3ezFCRo1WYV9bvAgxo1arhqreFYSMHmqmdfGEJmb0UtNWUdDEjN5KG8sOmpgxSklrWUETM0bLbe500MSMWXLaOxU0MWO2sw3eDZqYYcWZFg+DJmZYc6/JJn9SCFhxM2imM6w6anM3aGKGdbcaZeWAlB9BM52xir1WmdCQ8i1opjNWs22WCQ0pX0EznbGqtF0mNKQQNKRcQ2DdwPpiw0zoQf7++TX7ElwgaEgh6AHidGZK93dlf4aKh8enTyZ0Z0zlsQh6MALvi6AhhaA7ujWNmdL9EDSkEHQnTOE5CHoSgu+DoCGFoDtg+s5D0BMRfnsEDSkE3RhTdy6Cnow3QFsE3RBxzkfQBvBGaIegIYWgG2HK2kDQRvCGaIOgGyBGOwgaUgjaECZ9PYKuRIS2ELQxvEHqEHQF4rOHoCGFoA1i8pcj6EJEZxNBQwpBG8UnQBmCLkBsdhE0pBB0ppHTmU+CfAQNKQRtHFM6D0FnIC77CBpSCPqkmdOZT4bzCBpSLor/rRsT7Zznl4/Zl9Dc1KAJT9PMN8rUlUNxQng3+0zNrBxM67XNDjky802hlQeCfJbOzkzQIdh6MDjH2pmZWTm2WEFssxZyZGpCp6w+MNg+G7NBh2D7wXll/UxMBx2C/QfoyQpnYXaH3sNePccKIUfmJ3RqpQerYrVnvlTQIaz3gFe24rNeauXYYgXpY8WQo+UmdGrlB2/V6s906aBDWP8ALFF4lkuvHFusIGUUQo6Wn9AppYMZRe2ZSQUdgt4B9aT4rKRWji1WkH2KIUdyEzqlfHCl1J+JdNAh6B9gDg/PQj7oEHwc5D1enoH0Dr3H217tJeTIxYROeTpgT/cauQs6BB8H7eEe97hbObbUVhCvIUcuJ3RKKQCleynlPmhocR+00sqhdC+l3AcNLQQNKQQNKa6DVtw5Fe8ph+ugoYegIYWgIcVt0Mq7pvK93eM2aGgiaEghaEhxGbSHHdPDPe5xGTR0ETSkEDSkuAva027p6V4jd0HP8PzywT+PGoSgO0tDJuz+CLqTo3iJuh9Xv8Zg1E6ZE+yIa/L0BmJCN1SyUniKbQSCbqQmTHbrdtysHL0+2luHuMp1WsWErtAjEqZ1HYIuMCI6oi5D0JlGhsa0zudih26xl84OS+EeRmBCn2AhBKb1OQR9wGJE1q7HGoK+wXI4lq9tNvkdOnf3XC0W9fvLxYROrHjYK15zT79nX4AFq0cRr9/jX+jfcj+hV485pXQvpaR36KOJpX74Xu/d5YRWPtDIwz3ucbVDeztkj7u1mwntLeaUp3uX3aHjVPJ0mGeoPxfpCa16aDXUn4nshIZP0hMa/hA0pBA0pBA0pBA0pBA0pBA0pBA0pFzf314vsy8CaOH97fXChIYUgoYUgoaUawj/d4/ZFwLUiA0zoSGFoCHlK2jWDqwqbZcJDSnfgmZKYzXbZpnQkPIjaKY0VrHXKhMaUnaDZkrDuluN3pzQRA2rjtpk5YCUw6CZ0rDmXpN3JzRRw4ozLZ5aOYgas51t8PQOTdSYJae9rG8KiRqj5TaX/VMOosYoJa0V/diOqNFbaWPFP4cmavRS01aTKPml6WihxZBs8ieFTGvUatVQ8xCZ1sjRehh2m6yEjSO9PtW7rwqEjVTv9XTo7kvcPo38HmvqN3MErmnmDwn+AdSY1GV0yCTEAAAAAElFTkSuQmCC" />
@@ -238,6 +239,12 @@
       <rect x="6" y="14" width="12" height="8" />
     </Icon>
   );
+  const Bell = (p) => (
+    <Icon {...p}>
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </Icon>
+  );
 
 
 const PALETTE = [
@@ -264,6 +271,7 @@ const DEFAULT_CATEGORIES = [
 
 const STORAGE_KEY = "mandato-data-v1";
 const VISION_WORKER_URL = "https://to-dolgphoto.guidolin.workers.dev/";
+const VAPID_PUBLIC_KEY = "BJjuBBW6pu0eizAEGa5Huu8a5PKaARSGMAqaPvWMRqgx3vD2gnZPMpQZo2olTaSEf25yfC7gPZxL4C6QxwaJmNg";
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -387,6 +395,11 @@ function MeusToDos() {
   const [manageOpen, setManageOpen] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
   const [pdfError, setPdfError] = useState(null);
+  const [notifSettings, setNotifSettings] = useState({ times: [], filter: "priority" });
+  const [pushSubscriptions, setPushSubscriptions] = useState([]);
+  const [notifModalOpen, setNotifModalOpen] = useState(false);
+  const [notifError, setNotifError] = useState(null);
+  const [notifBusy, setNotifBusy] = useState(false);
   const pdfSourceRef = useRef(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -435,6 +448,12 @@ function MeusToDos() {
           loadedCats.map((c) => ({ ...c, subcategories: c.subcategories || [] }))
         );
         setTheme(parsed.theme === "light" ? "light" : "dark");
+        setNotifSettings(
+          parsed.notifSettings && Array.isArray(parsed.notifSettings.times)
+            ? parsed.notifSettings
+            : { times: [], filter: "priority" }
+        );
+        setPushSubscriptions(Array.isArray(parsed.pushSubscriptions) ? parsed.pushSubscriptions : []);
         setError(null);
         setLoadFailed(false);
       } catch (e) {
@@ -453,6 +472,9 @@ function MeusToDos() {
 
   useEffect(() => {
     loadData();
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    }
   }, []);
 
   // Save (skip the very first render before load completes)
@@ -481,14 +503,14 @@ function MeusToDos() {
 
   useEffect(() => {
     if (!loaded || loadFailed) return;
-    const payload = { todos, categories, theme, schemaVersion: 2 };
+    const payload = { todos, categories, theme, schemaVersion: 2, notifSettings, pushSubscriptions };
     savePayloadRef.current = payload;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
       persist(payload);
     }, 400);
     return () => clearTimeout(saveTimerRef.current);
-  }, [todos, categories, theme, loaded]);
+  }, [todos, categories, theme, notifSettings, pushSubscriptions, loaded]);
 
   function retrySave() {
     if (loadFailed) {
@@ -986,6 +1008,76 @@ function MeusToDos() {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   }
 
+  function urlBase64ToUint8Array(base64String) {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const rawData = atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; i++) outputArray[i] = rawData.charCodeAt(i);
+    return outputArray;
+  }
+
+  async function enableNotifications() {
+    setNotifError(null);
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      setNotifError(
+        "Notificações push não são suportadas aqui. No iPhone, o app precisa estar adicionado à Tela de Início (não funciona numa aba comum do Safari)."
+      );
+      return;
+    }
+    setNotifBusy(true);
+    try {
+      const perm = await Notification.requestPermission();
+      if (perm !== "granted") {
+        setNotifError("Permissão de notificação negada. Ative em Ajustes > Notificações, se mudar de ideia.");
+        setNotifBusy(false);
+        return;
+      }
+      const reg = await navigator.serviceWorker.register("sw.js");
+      await navigator.serviceWorker.ready;
+      let sub = await reg.pushManager.getSubscription();
+      if (!sub) {
+        sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        });
+      }
+      const subJson = sub.toJSON();
+      setPushSubscriptions((prev) => {
+        const filtered = prev.filter((s) => s.endpoint !== subJson.endpoint);
+        return [...filtered, subJson];
+      });
+    } catch (err) {
+      setNotifError("Falha ao ativar notificações: " + err.message);
+    } finally {
+      setNotifBusy(false);
+    }
+  }
+
+  function isThisDeviceSubscribed(currentEndpoint) {
+    return pushSubscriptions.some((s) => s.endpoint === currentEndpoint);
+  }
+
+  function addNotifTime() {
+    setNotifSettings((prev) => ({ ...prev, times: [...prev.times, "09:00"] }));
+  }
+
+  function updateNotifTime(index, value) {
+    setNotifSettings((prev) => {
+      const times = [...prev.times];
+      times[index] = value;
+      return { ...prev, times };
+    });
+  }
+
+  function removeNotifTime(index) {
+    setNotifSettings((prev) => ({ ...prev, times: prev.times.filter((_, i) => i !== index) }));
+  }
+
+  function setNotifFilter(filter) {
+    setNotifSettings((prev) => ({ ...prev, filter }));
+  }
+
   async function handleExportPdf() {
     setPdfError(null);
     if (!window.html2canvas || !(window.jspdf && window.jspdf.jsPDF)) {
@@ -1110,6 +1202,13 @@ function MeusToDos() {
             style={{ ...styles.themeToggleBtn, opacity: pdfGenerating ? 0.5 : 1 }}
           >
             <Printer size={16} />
+          </button>
+          <button
+            onClick={() => setNotifModalOpen(true)}
+            title="Notificações diárias"
+            style={styles.themeToggleBtn}
+          >
+            <Bell size={16} />
           </button>
         </div>
         <div className="header-stats" style={styles.headerStats}>
@@ -1797,6 +1896,105 @@ function MeusToDos() {
             <div style={styles.modalActions}>
               <div style={{ flex: 1 }} />
               <button onClick={() => setManageOpen(false)} style={styles.smallBtn}>
+                Concluído
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {notifModalOpen && (
+        <div style={styles.modalBackdrop} onClick={() => setNotifModalOpen(false)}>
+          <div className="modal" style={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalHeader}>
+              <span style={styles.modalEyebrow}>NOTIFICAÇÕES DIÁRIAS</span>
+              <button onClick={() => setNotifModalOpen(false)} style={styles.smallBtnGhost}>
+                <X size={14} />
+              </button>
+            </div>
+
+            {pushSubscriptions.length === 0 ? (
+              <>
+                <span style={styles.rowDesc}>
+                  Ative para este dispositivo poder receber avisos diários, mesmo com o app fechado.
+                  No iPhone, precisa estar aberto pelo ícone da Tela de Início (não numa aba do Safari).
+                </span>
+                <button onClick={enableNotifications} disabled={notifBusy} style={styles.smallBtn}>
+                  {notifBusy ? "Ativando…" : "Ativar notificações neste dispositivo"}
+                </button>
+              </>
+            ) : (
+              <span style={styles.rowDesc}>
+                Notificações ativas em {pushSubscriptions.length} dispositivo(s). Toque em "Ativar" de
+                novo em cada aparelho que quiser incluir.
+                <br />
+                <button
+                  onClick={enableNotifications}
+                  disabled={notifBusy}
+                  style={{ ...styles.smallBtnGhost, marginTop: 8 }}
+                >
+                  {notifBusy ? "Ativando…" : "Ativar também neste dispositivo"}
+                </button>
+              </span>
+            )}
+
+            {notifError && (
+              <div style={styles.voiceWarning}>
+                <AlertCircle size={12} />
+                <span>{notifError}</span>
+              </div>
+            )}
+
+            <label style={styles.fieldLabel}>Horário(s) do aviso</label>
+            {notifSettings.times.length === 0 && (
+              <span style={{ ...styles.rowDesc, fontSize: 12.5 }}>Nenhum horário definido ainda.</span>
+            )}
+            {notifSettings.times.map((t, idx) => (
+              <div key={idx} style={styles.manageCatRow}>
+                <input
+                  type="time"
+                  value={t}
+                  onChange={(e) => updateNotifTime(idx, e.target.value)}
+                  style={{ ...styles.dateInput, flex: 1 }}
+                />
+                <button onClick={() => removeNotifTime(idx)} style={styles.smallBtnGhost}>
+                  <X size={13} />
+                </button>
+              </div>
+            ))}
+            <button onClick={addNotifTime} style={{ ...styles.catChip, borderStyle: "dashed", alignSelf: "flex-start" }}>
+              + horário
+            </button>
+
+            <label style={styles.fieldLabel}>O que enviar</label>
+            <div style={styles.catPicker}>
+              <button
+                onClick={() => setNotifFilter("priority")}
+                style={{
+                  ...styles.catChip,
+                  borderColor: notifSettings.filter === "priority" ? colors.accent : colors.border,
+                  color: notifSettings.filter === "priority" ? colors.accent : colors.textSecondary,
+                  background: notifSettings.filter === "priority" ? colors.accentDim : "transparent",
+                }}
+              >
+                ★ Prioritárias
+              </button>
+              <button
+                onClick={() => setNotifFilter("due")}
+                style={{
+                  ...styles.catChip,
+                  borderColor: notifSettings.filter === "due" ? colors.accent : colors.border,
+                  color: notifSettings.filter === "due" ? colors.accent : colors.textSecondary,
+                  background: notifSettings.filter === "due" ? colors.accentDim : "transparent",
+                }}
+              >
+                Vencidas ou de hoje
+              </button>
+            </div>
+
+            <div style={styles.modalActions}>
+              <div style={{ flex: 1 }} />
+              <button onClick={() => setNotifModalOpen(false)} style={styles.smallBtn}>
                 Concluído
               </button>
             </div>
