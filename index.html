@@ -395,7 +395,7 @@ function MeusToDos() {
   const [manageOpen, setManageOpen] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
   const [pdfError, setPdfError] = useState(null);
-  const [notifSettings, setNotifSettings] = useState({ times: [], filter: "priority", categories: [] });
+  const [notifSettings, setNotifSettings] = useState({ slots: [] });
   const [pushSubscriptions, setPushSubscriptions] = useState([]);
   const [notifModalOpen, setNotifModalOpen] = useState(false);
   const [notifError, setNotifError] = useState(null);
@@ -448,11 +448,22 @@ function MeusToDos() {
           loadedCats.map((c) => ({ ...c, subcategories: c.subcategories || [] }))
         );
         setTheme(parsed.theme === "light" ? "light" : "dark");
-        setNotifSettings(
-          parsed.notifSettings && Array.isArray(parsed.notifSettings.times)
-            ? { categories: [], ...parsed.notifSettings }
-            : { times: [], filter: "priority", categories: [] }
-        );
+        {
+          const oldSettings = parsed.notifSettings;
+          if (oldSettings && Array.isArray(oldSettings.slots)) {
+            setNotifSettings(oldSettings);
+          } else if (oldSettings && Array.isArray(oldSettings.times)) {
+            // Migração do formato antigo (um filtro/categorias compartilhado por todos os horários)
+            const slots = oldSettings.times.map((t) => ({
+              time: t,
+              filter: oldSettings.filter || "priority",
+              categories: oldSettings.categories || [],
+            }));
+            setNotifSettings({ slots });
+          } else {
+            setNotifSettings({ slots: [] });
+          }
+        }
         setPushSubscriptions(Array.isArray(parsed.pushSubscriptions) ? parsed.pushSubscriptions : []);
         setError(null);
         setLoadFailed(false);
@@ -1058,33 +1069,41 @@ function MeusToDos() {
     return pushSubscriptions.some((s) => s.endpoint === currentEndpoint);
   }
 
-  function addNotifTime() {
-    setNotifSettings((prev) => ({ ...prev, times: [...prev.times, "09:00"] }));
+  function addNotifSlot() {
+    setNotifSettings((prev) => ({
+      slots: [...(prev.slots || []), { time: "09:00", filter: "priority", categories: [] }],
+    }));
   }
 
-  function updateNotifTime(index, value) {
+  function updateNotifSlotTime(index, value) {
     setNotifSettings((prev) => {
-      const times = [...prev.times];
-      times[index] = value;
-      return { ...prev, times };
+      const slots = [...prev.slots];
+      slots[index] = { ...slots[index], time: value };
+      return { ...prev, slots };
     });
   }
 
-  function removeNotifTime(index) {
-    setNotifSettings((prev) => ({ ...prev, times: prev.times.filter((_, i) => i !== index) }));
+  function removeNotifSlot(index) {
+    setNotifSettings((prev) => ({ slots: prev.slots.filter((_, i) => i !== index) }));
   }
 
-  function setNotifFilter(filter) {
-    setNotifSettings((prev) => ({ ...prev, filter }));
-  }
-
-  function toggleNotifCategory(categoryId) {
+  function setNotifSlotFilter(index, filter) {
     setNotifSettings((prev) => {
-      const current = prev.categories || [];
+      const slots = [...prev.slots];
+      slots[index] = { ...slots[index], filter };
+      return { ...prev, slots };
+    });
+  }
+
+  function toggleNotifSlotCategory(index, categoryId) {
+    setNotifSettings((prev) => {
+      const slots = [...prev.slots];
+      const current = slots[index].categories || [];
       const next = current.includes(categoryId)
         ? current.filter((id) => id !== categoryId)
         : [...current, categoryId];
-      return { ...prev, categories: next };
+      slots[index] = { ...slots[index], categories: next };
+      return { ...prev, slots };
     });
   }
 
@@ -1955,73 +1974,82 @@ function MeusToDos() {
               </div>
             )}
 
-            <label style={styles.fieldLabel}>Horário(s) do aviso</label>
-            {notifSettings.times.length === 0 && (
+            <label style={styles.fieldLabel}>Horários e o que enviar em cada um</label>
+            {(!notifSettings.slots || notifSettings.slots.length === 0) && (
               <span style={{ ...styles.rowDesc, fontSize: 12.5 }}>Nenhum horário definido ainda.</span>
             )}
-            {notifSettings.times.map((t, idx) => (
-              <div key={idx} style={styles.manageCatRow}>
-                <input
-                  type="time"
-                  value={t}
-                  onChange={(e) => updateNotifTime(idx, e.target.value)}
-                  style={{ ...styles.dateInput, flex: 1 }}
-                />
-                <button onClick={() => removeNotifTime(idx)} style={styles.smallBtnGhost}>
-                  <X size={13} />
-                </button>
-              </div>
-            ))}
-            <button onClick={addNotifTime} style={{ ...styles.catChip, borderStyle: "dashed", alignSelf: "flex-start" }}>
-              + horário
-            </button>
+            {(notifSettings.slots || []).map((slot, idx) => (
+              <div key={idx} style={styles.photoTaskCard}>
+                <div style={styles.manageCatRow}>
+                  <input
+                    type="time"
+                    value={slot.time}
+                    onChange={(e) => updateNotifSlotTime(idx, e.target.value)}
+                    style={{ ...styles.dateInput, flex: 1 }}
+                  />
+                  <button onClick={() => removeNotifSlot(idx)} style={styles.smallBtnGhost}>
+                    <X size={13} />
+                  </button>
+                </div>
 
-            <label style={styles.fieldLabel}>O que enviar</label>
-            <div style={styles.catPicker}>
-              <button
-                onClick={() => setNotifFilter("priority")}
-                style={{
-                  ...styles.catChip,
-                  borderColor: notifSettings.filter === "priority" ? colors.accent : colors.border,
-                  color: notifSettings.filter === "priority" ? colors.accent : colors.textSecondary,
-                  background: notifSettings.filter === "priority" ? colors.accentDim : "transparent",
-                }}
-              >
-                ★ Prioritárias
-              </button>
-              <button
-                onClick={() => setNotifFilter("due")}
-                style={{
-                  ...styles.catChip,
-                  borderColor: notifSettings.filter === "due" ? colors.accent : colors.border,
-                  color: notifSettings.filter === "due" ? colors.accent : colors.textSecondary,
-                  background: notifSettings.filter === "due" ? colors.accentDim : "transparent",
-                }}
-              >
-                Vencidas ou de hoje
-              </button>
-            </div>
-
-            <label style={styles.fieldLabel}>Categorias incluídas (nenhuma marcada = todas)</label>
-            <div style={styles.catPicker}>
-              {categories.map((c) => {
-                const active = (notifSettings.categories || []).includes(c.id);
-                return (
+                <div style={styles.catPicker}>
                   <button
-                    key={c.id}
-                    onClick={() => toggleNotifCategory(c.id)}
+                    onClick={() => setNotifSlotFilter(idx, "priority")}
                     style={{
                       ...styles.catChip,
-                      borderColor: active ? c.color : colors.border,
-                      color: active ? c.color : colors.textSecondary,
-                      background: active ? c.color + "1A" : "transparent",
+                      fontSize: 12.5,
+                      padding: "4px 10px",
+                      borderColor: slot.filter === "priority" ? colors.accent : colors.border,
+                      color: slot.filter === "priority" ? colors.accent : colors.textSecondary,
+                      background: slot.filter === "priority" ? colors.accentDim : "transparent",
                     }}
                   >
-                    {c.name}
+                    ★ Prioritárias
                   </button>
-                );
-              })}
-            </div>
+                  <button
+                    onClick={() => setNotifSlotFilter(idx, "due")}
+                    style={{
+                      ...styles.catChip,
+                      fontSize: 12.5,
+                      padding: "4px 10px",
+                      borderColor: slot.filter === "due" ? colors.accent : colors.border,
+                      color: slot.filter === "due" ? colors.accent : colors.textSecondary,
+                      background: slot.filter === "due" ? colors.accentDim : "transparent",
+                    }}
+                  >
+                    Vencidas ou de hoje
+                  </button>
+                </div>
+
+                <span style={{ ...styles.fieldLabel, marginTop: 4 }}>
+                  Categorias (nenhuma marcada = todas)
+                </span>
+                <div style={styles.catPicker}>
+                  {categories.map((c) => {
+                    const active = (slot.categories || []).includes(c.id);
+                    return (
+                      <button
+                        key={c.id}
+                        onClick={() => toggleNotifSlotCategory(idx, c.id)}
+                        style={{
+                          ...styles.catChip,
+                          fontSize: 12.5,
+                          padding: "4px 10px",
+                          borderColor: active ? c.color : colors.border,
+                          color: active ? c.color : colors.textSecondary,
+                          background: active ? c.color + "1A" : "transparent",
+                        }}
+                      >
+                        {c.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+            <button onClick={addNotifSlot} style={{ ...styles.catChip, borderStyle: "dashed", alignSelf: "flex-start" }}>
+              + horário
+            </button>
 
             <div style={styles.modalActions}>
               <div style={{ flex: 1 }} />
